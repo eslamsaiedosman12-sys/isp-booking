@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ISP Admin">
+<meta name="theme-color" content="#0d0d0d">
+<title>Admin — Islam Saeid Photography</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#C9A84C;--gold2:#E8C97A;--dark:#0d0d0d;--dark2:#1a1010;--surface:#fff;--surface2:#faf8f5;--border:rgba(0,0,0,0.08);--text:#1a0a0f;--text2:#6b5060;--text3:#aaa;--green:#2d7a3a;--green-l:#e8f5eb;--amber:#8a5200;--amber-l:#fff3e0;--blue:#1a5fa5;--blue-l:#e8f1fb;--radius:18px;--radius-sm:12px;--shadow:0 4px 24px rgba(0,0,0,0.08)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Cairo',sans-serif;background:var(--surface2);color:var(--text);min-height:100dvh}
+/* LOGIN */
+.login-screen{position:fixed;inset:0;background:linear-gradient(160deg,#0d0d0d,#1a0808,#2a1015);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;z-index:100}
+.login-screen.hide{display:none}
+.login-logo{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:20px;box-shadow:0 8px 32px rgba(201,168,76,0.3)}
+.login-title{font-size:20px;font-weight:800;color:#fff;margin-bottom:6px}
+.login-sub{font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:32px}
+.login-input{width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(201,168,76,0.3);border-radius:var(--radius-sm);padding:14px;font-family:'Cairo',sans-serif;font-size:18px;color:#fff;text-align:center;letter-spacing:0.2em;outline:none;margin-bottom:14px}
+.login-btn{width:100%;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--dark);border:none;border-radius:var(--radius-sm);padding:14px;font-family:'Cairo',sans-serif;font-size:16px;font-weight:800;cursor:pointer}
+.login-err{color:#ff6b6b;font-size:13px;margin-top:8px;display:none}
+/* HEADER */
+.header{background:linear-gradient(135deg,var(--dark),var(--dark2));padding:52px 20px 20px;position:relative}
+.header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(201,168,76,0.08),transparent 60%)}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;position:relative}
+.hdr-title{font-size:16px;font-weight:800;color:#fff}
+.hdr-title span{color:var(--gold2)}
+.hdr-logout{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);border-radius:99px;padding:6px 14px;font-family:'Cairo',sans-serif;font-size:12px;cursor:pointer}
+/* STATS */
+.stats{padding:0 16px;margin-top:-10px;display:grid;grid-template-columns:1fr 1fr;gap:10px;position:relative;z-index:5}
+.stat{background:var(--surface);border-radius:var(--radius-sm);padding:14px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.stat.dark{background:linear-gradient(135deg,var(--dark),var(--dark2));border-color:rgba(201,168,76,0.2)}
+.stat-label{font-size:11px;color:var(--text3);margin-bottom:3px}
+.stat.dark .stat-label{color:rgba(255,255,255,0.4)}
+.stat-val{font-size:19px;font-weight:800}
+.stat-val.g{color:var(--green)}
+.stat-val.a{color:var(--amber)}
+.stat-val.gold{color:var(--gold2)}
+/* FILTER */
+.filter-wrap{padding:14px 16px 0;display:flex;gap:8px}
+.filter-wrap input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;font-family:'Cairo',sans-serif;font-size:13px;color:var(--text);outline:none}
+.filter-wrap input:focus{border-color:var(--gold)}
+.filter-wrap select{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;font-family:'Cairo',sans-serif;font-size:13px;color:var(--text);outline:none}
+/* LIST */
+.list-wrap{padding:14px 16px 80px}
+.list-hdr{font-size:13px;color:var(--text2);font-weight:600;margin-bottom:10px}
+/* BOOKING CARD */
+.bcard{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden;margin-bottom:12px;cursor:pointer;transition:transform 0.12s}
+.bcard:active{transform:scale(0.982)}
+.bacc{height:4px}
+.bacc.confirmed{background:linear-gradient(90deg,var(--green),#4caf50)}
+.bacc.pending{background:linear-gradient(90deg,#e9a800,#f5c842)}
+.bacc.done{background:linear-gradient(90deg,var(--blue),#42a5f5)}
+.bbody{padding:14px 16px}
+.btop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
+.bnames{font-size:15px;font-weight:700}
+.bnames .amp{color:#D4537E;margin:0 3px}
+.sbadge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap;flex-shrink:0}
+.b-confirmed{background:var(--green-l);color:var(--green)}
+.b-pending{background:var(--amber-l);color:var(--amber)}
+.b-done{background:var(--blue-l);color:var(--blue)}
+.bmeta{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;margin-bottom:10px}
+.bm{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bpay{border-top:1px solid var(--border);padding-top:10px}
+.bpay-row{display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px}
+.paid{color:var(--green);font-weight:700}
+.rem{color:var(--amber);font-weight:700}
+.progress{height:4px;background:#f0ede8;border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--green),#5cb85c);border-radius:99px}
+/* DETAIL MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:200;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity 0.2s}
+.modal-bg.open{opacity:1;pointer-events:all}
+.modal-sheet{background:var(--surface);border-radius:24px 24px 0 0;width:100%;max-height:92dvh;overflow-y:auto;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1);padding-bottom:env(safe-area-inset-bottom,20px)}
+.modal-bg.open .modal-sheet{transform:translateY(0)}
+.mhandle{width:40px;height:4px;background:#ddd;border-radius:99px;margin:12px auto 0}
+.mhead{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 12px;border-bottom:1px solid var(--border)}
+.mhead-title{font-size:16px;font-weight:700}
+.mclose{background:#f5f0eb;border:none;border-radius:50%;width:32px;height:32px;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.dhero{padding:18px 20px 14px;background:linear-gradient(135deg,var(--dark),var(--dark2))}
+.dcouple{font-size:20px;font-weight:800;color:#fff;margin-bottom:6px}
+.dcouple .amp{color:var(--gold2)}
+.dsec{padding:14px 20px;border-bottom:1px solid var(--border)}
+.dsec-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.di-label{font-size:11px;color:var(--text2);margin-bottom:2px}
+.di-val{font-size:13px;font-weight:600;color:var(--text)}
+.di-val.g{color:var(--green)}
+.di-val.a{color:var(--amber)}
+.dactions{padding:14px 20px;display:flex;gap:8px;flex-wrap:wrap}
+.btn-edit{flex:1;background:#f5f0eb;color:var(--text);border:none;border-radius:var(--radius-sm);padding:12px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
+.btn-del{background:#fceaea;color:#a32020;border:none;border-radius:var(--radius-sm);padding:12px 14px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
+.btn-call{background:var(--green-l);color:var(--green);border:none;border-radius:var(--radius-sm);padding:12px 14px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+.status-select{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;font-family:'Cairo',sans-serif;font-size:13px;color:var(--text);outline:none}
+/* EMPTY */
+.empty{text-align:center;padding:50px 20px;color:var(--text3)}
+.empty div{font-size:40px;margin-bottom:12px}
+/* TOAST */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--dark);color:#fff;padding:11px 24px;border-radius:99px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:all 0.25s;z-index:999;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.loading{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:300;align-items:center;justify-content:center}
+.loading.show{display:flex}
+.spinner{width:44px;height:44px;border:4px solid rgba(201,168,76,0.3);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.today-tag{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:#fff3e0;color:#e65100;border:1px solid #ffcc80;margin-left:6px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-logo">🔐</div>
+  <div class="login-title">Islam Saeid Photography</div>
+  <div class="login-sub">لوحة تحكم المسؤول</div>
+  <input type="password" class="login-input" id="pwInput" placeholder="••••••" onkeydown="if(event.key==='Enter')checkLogin()">
+  <button class="login-btn" onclick="checkLogin()">دخول</button>
+  <div class="login-err" id="loginErr">كلمة المرور غير صحيحة</div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="hdr-top">
+    <div class="hdr-title">Islam <span>Saeid</span> — Admin</div>
+    <button class="hdr-logout" onclick="logout()">خروج</button>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats" id="statsGrid"></div>
+
+<!-- FILTER -->
+<div class="filter-wrap">
+  <input type="text" id="searchQ" placeholder="🔍 ابحث بالاسم..." oninput="filterList()">
+  <select id="filterS" onchange="filterList()">
+    <option value="">الكل</option>
+    <option value="pending">معلق</option>
+    <option value="confirmed">مؤكد</option>
+    <option value="done">منتهي</option>
+  </select>
+</div>
+
+<!-- LIST -->
+<div class="list-wrap">
+  <div class="list-hdr" id="listHdr"></div>
+  <div id="bookingsList"></div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-bg" id="detailModal" onclick="bgClose(event)">
+  <div class="modal-sheet">
+    <div class="mhandle"></div>
+    <div id="detailBody"></div>
+  </div>
+</div>
+
+<div class="loading" id="loading"><div class="spinner"></div></div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC4kXbfYZfZNglj_sHUTo7jKkHVQqBEHJI",
+  authDomain: "isp-bookings.firebaseapp.com",
+  projectId: "isp-bookings",
+  storageBucket: "isp-bookings.firebasestorage.app",
+  messagingSenderId: "352609960285",
+  appId: "1:352609960285:web:dbcc35e65020c4fa1e28b4"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const ADMIN_PASS = "isp2024";
+let bookings = [], filteredBookings = [], currentId = null;
+
+function fmt(n){return Number(n).toLocaleString('ar-EG');}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function loading(s){document.getElementById('loading').classList.toggle('show',s);}
+
+function statusInfo(s){
+  if(s==='confirmed')return{label:'مؤكد',cls:'b-confirmed',acc:'confirmed'};
+  if(s==='done')return{label:'منتهي',cls:'b-done',acc:'done'};
+  return{label:'معلق',cls:'b-pending',acc:'pending'};
+}
+
+function daysUntil(d){
+  if(!d)return null;
+  const t=new Date();t.setHours(0,0,0,0);
+  const dd=new Date(d+'T00:00:00');dd.setHours(0,0,0,0);
+  return Math.round((dd-t)/(86400000));
+}
+
+window.checkLogin=function(){
+  const p=document.getElementById('pwInput').value;
+  if(p===ADMIN_PASS){
+    document.getElementById('loginScreen').classList.add('hide');
+    loadBookings();
+  } else {
+    document.getElementById('loginErr').style.display='block';
+    document.getElementById('pwInput').value='';
+  }
+};
+
+window.logout=function(){
+  document.getElementById('loginScreen').classList.remove('hide');
+  document.getElementById('pwInput').value='';
+};
+
+async function loadBookings(){
+  loading(true);
+  try {
+    const q=query(collection(db,'bookings'),orderBy('date','asc'));
+    const snap=await getDocs(q);
+    bookings=snap.docs.map(d=>({id:d.id,...d.data()}));
+    filteredBookings=[...bookings];
+    renderStats();
+    renderList();
+  } catch(e){
+    // fallback without orderBy
+    try {
+      const snap=await getDocs(collection(db,'bookings'));
+      bookings=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
+        if(!a.date)return 1;if(!b.date)return -1;
+        return new Date(a.date)-new Date(b.date);
+      });
+      filteredBookings=[...bookings];
+      renderStats();
+      renderList();
+    } catch(e2){showToast('⚠️ خطأ في تحميل البيانات');}
+  }
+  loading(false);
+}
+
+function renderStats(){
+  const total=bookings.length;
+  const confirmed=bookings.filter(b=>b.status==='confirmed').length;
+  const totalDeposit=bookings.reduce((s,b)=>s+Number(b.deposit||0),0);
+  const totalRem=bookings.reduce((s,b)=>s+Number(b.remaining||0),0);
+  document.getElementById('statsGrid').innerHTML=`
+    <div class="stat"><div class="stat-label">إجمالي الحجوزات</div><div class="stat-val">${total}</div></div>
+    <div class="stat"><div class="stat-label">مؤكدة</div><div class="stat-val g">${confirmed}</div></div>
+    <div class="stat dark"><div class="stat-label">إجمالي العربون</div><div class="stat-val gold">${fmt(totalDeposit)} ج</div></div>
+    <div class="stat"><div class="stat-label">مبالغ باقية</div><div class="stat-val a">${fmt(totalRem)} ج</div></div>
+  `;
+}
+
+window.filterList=function(){
+  const q=document.getElementById('searchQ').value.toLowerCase();
+  const fs=document.getElementById('filterS').value;
+  filteredBookings=bookings.filter(b=>{
+    const mq=!q||(b.groom||'').includes(q)||(b.bride||'').includes(q);
+    const ms=!fs||b.status===fs;
+    return mq&&ms;
+  });
+  renderList();
+};
+
+function renderList(){
+  document.getElementById('listHdr').textContent=filteredBookings.length+' حجز';
+  if(!filteredBookings.length){
+    document.getElementById('bookingsList').innerHTML='<div class="empty"><div>📅</div><p>لا توجد حجوزات</p></div>';
+    return;
+  }
+  document.getElementById('bookingsList').innerHTML=filteredBookings.map(b=>{
+    const si=statusInfo(b.status);
+    const pct=b.price>0?Math.round((b.deposit/b.price)*100):0;
+    const days=daysUntil(b.date);
+    const dateStr=b.date?new Date(b.date+'T00:00:00').toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'}):'—';
+    const todayTag=(days===0&&b.status!=='done')?'<span class="today-tag">🔴 اليوم</span>':(days===1&&b.status!=='done')?'<span class="today-tag" style="background:#e8f1fb;color:#1a5fa5;border-color:#90caf9">🔵 غداً</span>':'';
+    return `<div class="bcard" onclick="openDetail('${b.id}')">
+      <div class="bacc ${si.acc}"></div>
+      <div class="bbody">
+        <div class="btop">
+          <div>
+            ${todayTag}
+            <div class="bnames">${b.groom||'—'}<span class="amp">&</span>${b.bride||'—'}</div>
+          </div>
+          <span class="sbadge ${si.cls}">${si.label}</span>
+        </div>
+        <div class="bmeta">
+          <div class="bm">📅 ${dateStr}</div>
+          <div class="bm">⏰ ${b.time||'—'}</div>
+          <div class="bm">🎯 ${b.type||'—'}</div>
+          <div class="bm">📦 ${b.package||'—'}</div>
+          <div class="bm">📍 ${b.sessionLocation||'—'}</div>
+          <div class="bm">📞 ${b.phone1||'—'}</div>
+        </div>
+        <div class="bpay">
+          <div class="bpay-row">
+            <span style="color:var(--text2)">نسبة السداد ${pct}%</span>
+            <div style="display:flex;gap:10px">
+              <span class="paid">+${fmt(b.deposit||0)} ج</span>
+              <span class="rem">-${fmt(b.remaining||0)} ج</span>
+            </div>
+          </div>
+          <div class="progress"><div class="progress-fill" style="width:${pct}%"></div></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.openDetail=function(id){
+  const b=bookings.find(x=>x.id===id);
+  if(!b)return;
+  currentId=id;
+  const si=statusInfo(b.status);
+  const pct=b.price>0?Math.round((b.deposit/b.price)*100):0;
+  const dateStr=b.date?new Date(b.date+'T00:00:00').toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'}):'—';
+  document.getElementById('detailBody').innerHTML=`
+    <div class="dhero">
+      <div class="dcouple">${b.groom||'—'}<span class="amp"> & </span>${b.bride||'—'}</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="sbadge ${si.cls}">${si.label}</span>
+        <span style="font-size:12px;color:rgba(255,255,255,0.4)">${dateStr}</span>
+      </div>
+    </div>
+    <div class="mhead" style="border-bottom:none;padding-bottom:0">
+      <span class="mhead-title">تفاصيل الحجز</span>
+      <button class="mclose" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="dsec">
+      <div class="dsec-title">بيانات التواصل</div>
+      <div class="dgrid">
+        <div><div class="di-label">اسم العريس</div><div class="di-val">${b.groom||'—'}</div></div>
+        <div><div class="di-label">اسم العروسة</div><div class="di-val">${b.bride||'—'}</div></div>
+        <div><div class="di-label">رقم العريس</div><div class="di-val" style="direction:ltr;text-align:right">${b.phone1||'—'}</div></div>
+        <div><div class="di-label">رقم العروسة</div><div class="di-val" style="direction:ltr;text-align:right">${b.phone2||'—'}</div></div>
+      </div>
+    </div>
+    <div class="dsec">
+      <div class="dsec-title">تفاصيل الجلسة</div>
+      <div class="dgrid">
+        <div><div class="di-label">نوع التصوير</div><div class="di-val">${b.type||'—'}</div></div>
+        <div><div class="di-label">الباقة</div><div class="di-val">${b.package||'—'}</div></div>
+        <div><div class="di-label">التاريخ</div><div class="di-val">${dateStr}</div></div>
+        <div><div class="di-label">الوقت</div><div class="di-val">${b.time||'—'}</div></div>
+        <div><div class="di-label">مكان السيشن</div><div class="di-val">${b.sessionLocation||'—'}</div></div>
+        <div><div class="di-label">مكان القاعة</div><div class="di-val">${b.hallLocation||'—'}</div></div>
+      </div>
+    </div>
+    <div class="dsec">
+      <div class="dsec-title">المدفوعات</div>
+      <div class="dgrid" style="margin-bottom:10px">
+        <div><div class="di-label">سعر الباقة</div><div class="di-val">${fmt(b.price||0)} ج</div></div>
+        <div><div class="di-label">طريقة الدفع</div><div class="di-val">${b.paymentMethod||'—'}</div></div>
+        <div><div class="di-label">العربون المدفوع</div><div class="di-val g">${fmt(b.deposit||0)} ج</div></div>
+        <div><div class="di-label">المبلغ الباقي</div><div class="di-val a">${fmt(b.remaining||0)} ج</div></div>
+      </div>
+      <div class="progress"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="dsec">
+      <div class="dsec-title">تغيير الحالة</div>
+      <select class="status-select" id="statusSel" onchange="updateStatus('${id}',this.value)">
+        <option value="pending" ${b.status==='pending'?'selected':''}>⏳ معلق</option>
+        <option value="confirmed" ${b.status==='confirmed'?'selected':''}>✅ مؤكد</option>
+        <option value="done" ${b.status==='done'?'selected':''}>🎉 منتهي</option>
+      </select>
+    </div>
+    <div class="dactions">
+      ${b.phone1?`<a class="btn-call" href="tel:${b.phone1}">📞 اتصل</a>`:''}
+      ${b.phone1?`<a class="btn-call" href="https://wa.me/2${b.phone1}" target="_blank" style="background:#e8f5e9;color:#2d7a3a">💬 واتساب</a>`:''}
+      <button class="btn-edit" onclick="closeDetail()">✕ إغلاق</button>
+      <button class="btn-del" onclick="deleteBooking('${id}')">🗑 حذف</button>
+    </div>
+  `;
+  document.getElementById('detailModal').classList.add('open');
+};
+
+window.updateStatus=async function(id,status){
+  loading(true);
+  try{
+    await updateDoc(doc(db,'bookings',id),{status});
+    const b=bookings.find(x=>x.id===id);
+    if(b)b.status=status;
+    filterList();
+    showToast('✅ تم تحديث الحالة');
+  }catch(e){showToast('⚠️ خطأ في التحديث');}
+  loading(false);
+};
+
+window.deleteBooking=async function(id){
+  if(!confirm('هل تريد حذف هذا الحجز نهائياً؟'))return;
+  loading(true);
+  try{
+    await deleteDoc(doc(db,'bookings',id));
+    bookings=bookings.filter(b=>b.id!==id);
+    closeDetail();
+    renderStats();
+    filterList();
+    showToast('🗑 تم حذف الحجز');
+  }catch(e){showToast('⚠️ خطأ في الحذف');}
+  loading(false);
+};
+
+window.closeDetail=function(){document.getElementById('detailModal').classList.remove('open');};
+window.bgClose=function(e){if(e.target.id==='detailModal')closeDetail();};
+</script>
+</body>
+</html>

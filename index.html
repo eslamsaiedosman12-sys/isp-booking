@@ -327,83 +327,46 @@ window.submitBooking = async function(){
     console.error(e);
   }
 };
+// كود جلب الأسعار وتحديثها تلقائياً من لوحة الأدمن بشكل آمن ومتوافق
+if (typeof firebase !== 'undefined') {
+    firebase.firestore().collection("packages").onSnapshot((snapshot) => {
+        if (!snapshot.empty) {
+            snapshot.forEach((doc) => {
+                const pkgData = doc.data();
+                const cat = pkgData.category; 
+                const pId = parseInt(pkgData.packageId); 
+                
+                // تحديث السعر في المصفوفة الأساسية للموقع فوراً
+                if (typeof packages !== 'undefined' && packages[cat] && packages[cat][pId - 1]) {
+                    packages[cat][pId - 1].price = pkgData.price;
+                } else if (window.packages && window.packages[cat] && window.packages[cat][pId - 1]) {
+                    window.packages[cat][pId - 1].price = pkgData.price;
+                }
+            });
 
-// كود ذكي وآمن لجلب الأسعار بدون تجميد الصفحة أو تعطيل الأزرار
-db.collection("packages").onSnapshot((snapshot) => {
-    if (!snapshot.empty) {
-        snapshot.forEach((doc) => {
-            const pkgData = doc.data();
-            const cat = pkgData.category; 
-            const pId = pkgData.packageId; 
-            
-            // 1. تحديث المصفوفة الداخلية إذا كانت معرّفة بأي شكل
-            if (typeof packages !== 'undefined' && packages[cat] && packages[cat][pId - 1]) {
-                packages[cat][pId - 1].price = pkgData.price;
-            } else if (window.packages && window.packages[cat] && window.packages[cat][pId - 1]) {
-                window.packages[cat][pId - 1].price = pkgData.price;
-            }
-        });
-
-        // 2. تحديث الأسعار المعروضة على الشاشة فقط إذا كانت الدالة الأصلية موجودة
-        // هذا يمنع تجمد الشاشة تماماً ويحافظ على عمل الأزرار
-        try {
-            if (typeof renderPackages === "function") {
-                const activeType = document.querySelector('.type-card.selected');
-                if (activeType) {
-                    const onclickAttr = activeType.getAttribute('onclick') || '';
-                    const match = onclickAttr.match(/'([^']+)'/);
-                    if (match && match[1]) {
-                        renderPackages(match[1]);
+            // إعادة بناء عرض الباقات على الشاشة بدون أي تجميد
+            try {
+                if (typeof renderPackages === "function") {
+                    const activeType = document.querySelector('.type-card.selected');
+                    if (activeType) {
+                        const onclickAttr = activeType.getAttribute('onclick') || '';
+                        const match = onclickAttr.match(/'([^']+)'/);
+                        if (match && match[1]) {
+                            renderPackages(match[1]);
+                        }
                     }
                 }
-            }
-        } catch (e) {
-            console.log("Safe render bypass:", e);
-        }
-    }
-}, (error) => {
-    console.log("Pricing sync bypass:", error);
-});
-        try {
-            if (typeof renderPackages === "function") {
-                const activeType = document.querySelector('.type-card.selected');
-                if (activeType) {
-                    const onclickAttr = activeType.getAttribute('onclick') || '';
-                    const match = onclickAttr.match(/'([^']+)'/);
-                    if (match && match[1]) {
-                        renderPackages(match[1]);
-                    }
-                }
-            }
-        } catch (e) {
-            console.log("Safe render bypass:", e);
-        }
-    }
-}, (error) => {
-    console.log("Pricing sync bypass:", error);
-});
-        }
-    }
-}, (error) => {
-    console.log("Pricing sync bypass:", error);
-});
-
-        // إعادة بناء عرض الباقات فوراً لو العميل فاتح الصفحة لتحديث الأسعار أمام عينه
-        if (typeof renderPackages === "function") {
-            const activeType = document.querySelector('.type-card.selected');
-            if (activeType) {
-                // استخراج نوع التصوير النشط وإعادة تشغيل الدالة لعرض الأسعار الجديدة
-                const onclickAttr = activeType.getAttribute('onclick') || '';
-                const match = onclickAttr.match(/'([^']+)'/);
-                if (match && match[1]) {
-                    renderPackages(match[1]);
-                }
+            } catch (e) {
+                console.log("Render bypass:", e);
             }
         }
-    }
-}, (error) => {
-    console.log("Firebase pricing bypass or empty:", error);
-});
+    }, (error) => {
+        console.log("Firebase bypass:", error);
+    });
+}
+</script>
+</body>
+</html>
 </script>
 </body>
 </html>

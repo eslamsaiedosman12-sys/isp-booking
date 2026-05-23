@@ -328,24 +328,29 @@ window.submitBooking = async function(){
   }
 };
 
-// كود جلب الأسعار وتحديثها تلقائياً من لوحة الأدمن بشكل آمن ومتوافق
+// كود جلب الأسعار الديناميكي المتوافق مع حقول قاعدة بياناتك بالملي
 if (typeof firebase !== 'undefined') {
     firebase.firestore().collection("packages").onSnapshot((snapshot) => {
         if (!snapshot.empty) {
             snapshot.forEach((doc) => {
                 const pkgData = doc.data();
-                const cat = pkgData.category; 
-                const pId = parseInt(pkgData.packageId); 
                 
-                // تحديث السعر في المصفوفة الأساسية للموقع فوراً
-                if (typeof packages !== 'undefined' && packages[cat] && packages[cat][pId - 1]) {
-                    packages[cat][pId - 1].price = pkgData.price;
-                } else if (window.packages && window.packages[cat] && window.packages[cat][pId - 1]) {
-                    window.packages[cat][pId - 1].price = pkgData.price;
+                // قراءة نوع التصوير ورقم الباقة المظبوطين من الأدمن
+                const cat = pkgData.type || pkgData.category; 
+                let pId = pkgData.packageId || pkgData.id;
+                
+                if (pId) {
+                    pId = parseInt(pId);
+                    // تحديث السعر في المصفوفة الأساسية للموقع فوراً
+                    if (typeof packages !== 'undefined' && packages[cat] && packages[cat][pId - 1]) {
+                        packages[cat][pId - 1].price = pkgData.price;
+                    } else if (window.packages && window.packages[cat] && window.packages[cat][pId - 1]) {
+                        window.packages[cat][pId - 1].price = pkgData.price;
+                    }
                 }
             });
 
-            // إعادة بناء عرض الباقات على الشاشة بدون أي تجميد
+            // إعادة بناء عرض الباقات على الشاشة فوراً بدون أي تجميد للأزرار
             try {
                 if (typeof renderPackages === "function") {
                     const activeType = document.querySelector('.type-card.selected');
@@ -358,11 +363,11 @@ if (typeof firebase !== 'undefined') {
                     }
                 }
             } catch (e) {
-                console.log("Render bypass:", e);
+                console.log("Render safe bypass:", e);
             }
         }
     }, (error) => {
-        console.log("Firebase bypass:", error);
+        console.log("Firebase sync bypass:", error);
     });
 }
 </script>

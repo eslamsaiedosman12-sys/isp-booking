@@ -328,15 +328,6 @@ window.submitBooking = async function(){
   }
 };
 
-window.resetForm=function(){
-  selType=null;selPkg=null;selPayMethod=null;
-  document.querySelectorAll('.type-card,.pkg-card,.pm-btn').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('secPkg').style.display='none';
-  document.getElementById('secForm').style.display='none';
-  ['f_groom','f_bride','f_phone1','f_phone2','f_session','f_hall','f_time','f_date','f_deposit'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('successScreen').classList.remove('show');
-  steps(1); window.scrollTo({top:0,behavior:'smooth'});
-};
 // كود ذكي وآمن لجلب الأسعار بدون تجميد الصفحة أو تعطيل الأزرار
 db.collection("packages").onSnapshot((snapshot) => {
     if (!snapshot.empty) {
@@ -355,6 +346,24 @@ db.collection("packages").onSnapshot((snapshot) => {
 
         // 2. تحديث الأسعار المعروضة على الشاشة فقط إذا كانت الدالة الأصلية موجودة
         // هذا يمنع تجمد الشاشة تماماً ويحافظ على عمل الأزرار
+        try {
+            if (typeof renderPackages === "function") {
+                const activeType = document.querySelector('.type-card.selected');
+                if (activeType) {
+                    const onclickAttr = activeType.getAttribute('onclick') || '';
+                    const match = onclickAttr.match(/'([^']+)'/);
+                    if (match && match[1]) {
+                        renderPackages(match[1]);
+                    }
+                }
+            }
+        } catch (e) {
+            console.log("Safe render bypass:", e);
+        }
+    }
+}, (error) => {
+    console.log("Pricing sync bypass:", error);
+});
         try {
             if (typeof renderPackages === "function") {
                 const activeType = document.querySelector('.type-card.selected');

@@ -328,28 +328,6 @@ window.submitBooking = async function(){
   }
 };
 
-// كود جلب الأسعار الديناميكي المتوافق مع حقول قاعدة بياناتك بالملي
-if (typeof firebase !== 'undefined') {
-    firebase.firestore().collection("packages").onSnapshot((snapshot) => {
-        if (!snapshot.empty) {
-            snapshot.forEach((doc) => {
-                const pkgData = doc.data();
-                
-                // قراءة نوع التصوير ورقم الباقة المظبوطين من الأدمن
-                const cat = pkgData.type || pkgData.category; 
-                let pId = pkgData.packageId || pkgData.id;
-                
-                if (pId) {
-                    pId = parseInt(pId);
-                    // تحديث السعر في المصفوفة الأساسية للموقع فوراً
-                    if (typeof packages !== 'undefined' && packages[cat] && packages[cat][pId - 1]) {
-                        packages[cat][pId - 1].price = pkgData.price;
-                    } else if (window.packages && window.packages[cat] && window.packages[cat][pId - 1]) {
-                        window.packages[cat][pId - 1].price = pkgData.price;
-                    }
-                }
-            });
-
             // إعادة بناء عرض الباقات على الشاشة فوراً بدون أي تجميد للأزرار
           // كود جلب الأسعار الديناميكي المتوافق مع حقول قاعدة بياناتك بالملي
 if (typeof firebase !== 'undefined') {

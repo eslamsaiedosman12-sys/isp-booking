@@ -337,20 +337,38 @@ window.resetForm=function(){
   document.getElementById('successScreen').classList.remove('show');
   steps(1); window.scrollTo({top:0,behavior:'smooth'});
 };
-  // كود جلب الأسعار وتحديثها تلقائياً من لوحة الأدمن
+// كود جلب الأسعار وتحديثها تلقائياً من لوحة الأدمن في المصفوفة
 db.collection("packages").onSnapshot((snapshot) => {
-    snapshot.forEach((doc) => {
-        const pkgData = doc.data();
-        // دمج الفئة مع رقم الباقة للحصول على الـ ID الفريد (مثل: wedding_pkg_1)
-        const pkgKey = `${pkgData.category}_pkg_${pkgData.packageId}`;
-        
-        // البحث عن عنصر السعر في التصميم وتحديثه
-        // الكود يبحث عن أي عنصر يحمل ID يبدأ بـ price_ ومربوط بالباقة
-        const priceElement = document.getElementById(`price_${pkgKey}`);
-        if (priceElement) {
-            priceElement.innerText = `${pkgData.price} جنيه`;
+    if (!snapshot.empty) {
+        snapshot.forEach((doc) => {
+            const pkgData = doc.data();
+            const cat = pkgData.category; // مثل wedding
+            const pId = parseInt(pkgData.packageId) - 1; // تحويل رقم الباقة لترتيب المصفوفة (0, 1, 2)
+
+            // تحديث السعر والمميزات داخل كائن الحزم الأساسي للموقع
+            if (window.packages && window.packages[cat] && window.packages[cat][pId]) {
+                window.packages[cat][pId].price = pkgData.price;
+                if (pkgData.details && pkgData.details.length > 0) {
+                    window.packages[cat][pId].details = pkgData.details;
+                }
+            }
+        });
+
+        // إعادة بناء عرض الباقات فوراً لو العميل فاتح الصفحة لتحديث الأسعار أمام عينه
+        if (typeof renderPackages === "function") {
+            const activeType = document.querySelector('.type-card.selected');
+            if (activeType) {
+                // استخراج نوع التصوير النشط وإعادة تشغيل الدالة لعرض الأسعار الجديدة
+                const onclickAttr = activeType.getAttribute('onclick') || '';
+                const match = onclickAttr.match(/'([^']+)'/);
+                if (match && match[1]) {
+                    renderPackages(match[1]);
+                }
+            }
         }
-    });
+    }
+}, (error) => {
+    console.log("Firebase pricing bypass or empty:", error);
 });
 </script>
 </body>

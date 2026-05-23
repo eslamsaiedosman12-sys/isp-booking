@@ -337,45 +337,42 @@ window.resetForm=function(){
   document.getElementById('successScreen').classList.remove('show');
   steps(1); window.scrollTo({top:0,behavior:'smooth'});
 };
-// الكود النهائي لتحديث الأسعار في واجهة العميل مباشرة فور التعديل من الأدمن
+// كود ذكي وآمن لجلب الأسعار بدون تجميد الصفحة أو تعطيل الأزرار
 db.collection("packages").onSnapshot((snapshot) => {
     if (!snapshot.empty) {
         snapshot.forEach((doc) => {
             const pkgData = doc.data();
-            const cat = pkgData.category; // مثل wedding
-            const pId = pkgData.packageId; // رقم الباقة مثل 1، 2
+            const cat = pkgData.category; 
+            const pId = pkgData.packageId; 
             
-            // 1. تحديث المصفوفة الداخلية لو متاحة في أي نطاق
+            // 1. تحديث المصفوفة الداخلية إذا كانت معرّفة بأي شكل
             if (typeof packages !== 'undefined' && packages[cat] && packages[cat][pId - 1]) {
                 packages[cat][pId - 1].price = pkgData.price;
             } else if (window.packages && window.packages[cat] && window.packages[cat][pId - 1]) {
                 window.packages[cat][pId - 1].price = pkgData.price;
             }
-
-            // 2. تحديث السعر المكتوب جوة الكرت على الشاشة فوراً
-            // الكود بيلف على كل الكروت المفتوحة وبيدور على الباقة المطلوبة ويغير سعرها ديناميكياً
-            const allCards = document.querySelectorAll('.pkg-card');
-            allCards.forEach(card => {
-                const cardTitle = card.querySelector('.pkg-name') || card.querySelector('h3') || card.querySelector('.card-title');
-                const cardPrice = card.querySelector('.pkg-price') || card.querySelector('.price') || card.querySelector('span');
-                
-                // لو الكارت المفتوح بيطابق رقم الباقة (مثلاً باقة 1)، بنغير السعر المعروض فوراً
-                if (cardTitle && cardTitle.innerText.includes(pId) && cardPrice) {
-                    cardPrice.innerText = `${pkgData.price} جنيه`;
-                }
-            });
         });
 
-        // 3. إعادة تشغيل دالة الريندر الأساسية لتحديث الحسابات والإجمالي
-        if (typeof renderPackages === "function") {
-            const activeType = document.querySelector('.type-card.selected');
-            if (activeType) {
-                const onclickAttr = activeType.getAttribute('onclick') || '';
-                const match = onclickAttr.match(/'([^']+)'/);
-                if (match && match[1]) {
-                    renderPackages(match[1]);
+        // 2. تحديث الأسعار المعروضة على الشاشة فقط إذا كانت الدالة الأصلية موجودة
+        // هذا يمنع تجمد الشاشة تماماً ويحافظ على عمل الأزرار
+        try {
+            if (typeof renderPackages === "function") {
+                const activeType = document.querySelector('.type-card.selected');
+                if (activeType) {
+                    const onclickAttr = activeType.getAttribute('onclick') || '';
+                    const match = onclickAttr.match(/'([^']+)'/);
+                    if (match && match[1]) {
+                        renderPackages(match[1]);
+                    }
                 }
             }
+        } catch (e) {
+            console.log("Safe render bypass:", e);
+        }
+    }
+}, (error) => {
+    console.log("Pricing sync bypass:", error);
+});
         }
     }
 }, (error) => {

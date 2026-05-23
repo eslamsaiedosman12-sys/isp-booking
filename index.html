@@ -337,6 +337,21 @@ window.resetForm=function(){
   document.getElementById('successScreen').classList.remove('show');
   steps(1); window.scrollTo({top:0,behavior:'smooth'});
 };
+  // كود جلب الأسعار وتحديثها تلقائياً من لوحة الأدمن
+db.collection("packages").onSnapshot((snapshot) => {
+    snapshot.forEach((doc) => {
+        const pkgData = doc.data();
+        // دمج الفئة مع رقم الباقة للحصول على الـ ID الفريد (مثل: wedding_pkg_1)
+        const pkgKey = `${pkgData.category}_pkg_${pkgData.packageId}`;
+        
+        // البحث عن عنصر السعر في التصميم وتحديثه
+        // الكود يبحث عن أي عنصر يحمل ID يبدأ بـ price_ ومربوط بالباقة
+        const priceElement = document.getElementById(`price_${pkgKey}`);
+        if (priceElement) {
+            priceElement.innerText = `${pkgData.price} جنيه`;
+        }
+    });
+});
 </script>
 </body>
 </html>

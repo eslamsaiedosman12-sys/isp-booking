@@ -328,26 +328,24 @@ window.submitBooking = async function(){
   }
 };
 
-            // إعادة بناء عرض الباقات على الشاشة فوراً بدون أي تجميد للأزرار
-          // كود جلب الأسعار الديناميكي المتوافق مع حقول قاعدة بياناتك بالملي
 <script>
-// تحديث الأسعار من Firebase مباشرة
-if (typeof firebase !== 'undefined') {
-    firebase.firestore().collection("packages").onSnapshot((snapshot) => {
-        snapshot.forEach((doc) => {
-            const data = doc.data();
-            // البحث عن الباقة وتحديث سعرها في مصفوفة الموقع الأساسية
-            if (window.packages && window.packages[data.category]) {
-                const p = window.packages[data.category].find(item => item.id == data.packageId);
-                if (p) {
-                    p.price = data.price;
+// كود تحديث الأسعار الآمن - لا يسبب فريز
+window.addEventListener('load', function() {
+    if (typeof firebase !== 'undefined') {
+        firebase.firestore().collection("packages").onSnapshot((snapshot) => {
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                if (window.packages && window.packages[data.category]) {
+                    const p = window.packages[data.category].find(item => item.id == data.packageId);
+                    if (p) { 
+                        p.price = data.price; 
+                    }
                 }
-            }
+            });
+            console.log("Firebase sync ready...");
         });
-        console.log("Prices updated successfully!");
-    });
-}
-</script>
+    }
+});
 </script>
 </body>
 </html>

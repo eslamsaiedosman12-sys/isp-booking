@@ -336,7 +336,15 @@ if (typeof firebase !== 'undefined') {
                 const cat = pkgData.category; 
                 const pId = parseInt(pkgData.packageId); 
                 
-                // تحديث السعر في المصفوفة الأساسية للموقع فوراً
+              // كود جلب الأسعار وتحديثها تلقائياً من لوحة الأدمن بشكل آمن ومتوافق
+if (typeof firebase !== 'undefined') {
+    firebase.firestore().collection("packages").onSnapshot((snapshot) => {
+        if (!snapshot.empty) {
+            snapshot.forEach((doc) => {
+                const pkgData = doc.data();
+                const cat = pkgData.category; 
+                const pId = parseInt(pkgData.packageId); 
+                
                 if (typeof packages !== 'undefined' && packages[cat] && packages[cat][pId - 1]) {
                     packages[cat][pId - 1].price = pkgData.price;
                 } else if (window.packages && window.packages[cat] && window.packages[cat][pId - 1]) {
@@ -344,7 +352,6 @@ if (typeof firebase !== 'undefined') {
                 }
             });
 
-            // إعادة بناء عرض الباقات على الشاشة بدون أي تجميد
             try {
                 if (typeof renderPackages === "function") {
                     const activeType = document.querySelector('.type-card.selected');
@@ -364,6 +371,9 @@ if (typeof firebase !== 'undefined') {
         console.log("Firebase bypass:", error);
     });
 }
+</script>
+</body>
+</html>
 </script>
 </body>
 </html>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ISP Booking">
+<meta name="theme-color" content="#0d0d0d">
+<title>Islam Saeid Photography — احجز جلستك</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#C9A84C;--gold2:#E8C97A;--gold3:rgba(201,168,76,0.12);--dark:#0d0d0d;--dark2:#1a1010;--surface:#fff;--surface2:#faf8f5;--border:rgba(0,0,0,0.08);--text:#1a0a0f;--text2:#6b5060;--text3:#aaa;--pink:#D4537E;--radius:20px;--radius-sm:12px;--shadow:0 4px 24px rgba(0,0,0,0.08)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Cairo',sans-serif;background:var(--surface2);color:var(--text);min-height:100dvh}
+.hero{background:linear-gradient(160deg,#0d0d0d 0%,#1a0808 50%,#2a1015 100%);padding:60px 24px 36px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 0%,rgba(201,168,76,0.12),transparent 60%),radial-gradient(ellipse at 70% 100%,rgba(212,83,126,0.08),transparent 60%)}
+.brand-ring{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:30px;box-shadow:0 8px 32px rgba(201,168,76,0.3);position:relative;z-index:1}
+.brand-title{font-size:20px;font-weight:900;color:#fff;margin-bottom:3px;position:relative;z-index:1}
+.brand-title span{color:var(--gold2)}
+.brand-sub{font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:0.1em;text-transform:uppercase;position:relative;z-index:1;margin-bottom:20px}
+.social-row{display:flex;justify-content:center;gap:10px;position:relative;z-index:1}
+.social-btn{display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:99px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:600;text-decoration:none;border:1px solid}
+.s-wa{background:rgba(37,211,102,0.15);color:#25D366;border-color:rgba(37,211,102,0.3)}
+.s-ig{background:rgba(212,83,126,0.15);color:#E1306C;border-color:rgba(212,83,126,0.3)}
+.s-fb{background:rgba(59,89,152,0.15);color:#4267B2;border-color:rgba(59,89,152,0.3)}
+.steps{display:flex;gap:6px;padding:16px 16px 0}
+.step-pill{flex:1;height:4px;border-radius:99px;background:#e0d8d0;transition:background 0.3s}
+.step-pill.active{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.form-wrap{padding:16px 16px 110px}
+.card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden;margin-bottom:14px}
+.card-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-icon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--dark),var(--dark2));display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.card-title{font-size:14px;font-weight:700}
+.card-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.card-body{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.type-card{border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px 10px;cursor:pointer;text-align:center;background:var(--surface);transition:all 0.2s}
+.type-card.selected{border-color:var(--gold);background:var(--gold3)}
+.type-icon{font-size:26px;margin-bottom:5px}
+.type-name{font-size:13px;font-weight:700}
+.type-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.pkg-card{border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;cursor:pointer;background:var(--surface);position:relative;overflow:hidden;transition:all 0.2s;margin-bottom:10px}
+.pkg-card.selected{border-color:var(--gold);background:linear-gradient(135deg,#fffdf5,#fffaec)}
+.pkg-card::before{content:'';position:absolute;top:0;right:0;width:3px;height:100%;background:transparent}
+.pkg-card.selected::before{background:linear-gradient(180deg,var(--gold),var(--gold2))}
+.pkg-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+.pkg-name{font-size:14px;font-weight:700}
+.pkg-price{font-size:15px;font-weight:800;color:var(--gold);white-space:nowrap}
+.pkg-details{font-size:12px;color:var(--text2);line-height:1.7}
+.pkg-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;margin-top:2px}
+.pkg-card.selected .pkg-check{background:var(--gold);border-color:var(--gold);color:#fff;font-size:11px}
+.note-bar{background:#fffbee;border:1px solid var(--gold);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:#8a5200;display:flex;align-items:center;gap:8px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:12px;font-weight:700;color:var(--text2)}
+.fg input,.fg select,.fg textarea{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;font-family:'Cairo',sans-serif;font-size:14px;color:var(--text);outline:none;width:100%;transition:border-color 0.15s}
+.fg input:focus,.fg select:focus{border-color:var(--gold);background:#fff}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pay-summary{background:linear-gradient(135deg,var(--dark),var(--dark2));border-radius:var(--radius-sm);padding:16px}
+.pay-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.pay-label{font-size:12px;color:rgba(255,255,255,0.5)}
+.pay-val{font-size:14px;font-weight:700;color:#fff}
+.pay-val.gold{color:var(--gold2)}
+.pay-val.green{color:#4cff8a}
+.pay-divider{border:none;border-top:1px solid rgba(255,255,255,0.1);margin:10px 0}
+.deposit-input{background:rgba(255,255,255,0.08);border:1px solid rgba(201,168,76,0.3);border-radius:var(--radius-sm);padding:11px 14px;font-family:'Cairo',sans-serif;font-size:16px;font-weight:700;color:var(--gold2);outline:none;width:100%;text-align:center}
+.payment-methods{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
+.pm-btn{border:1.5px solid rgba(255,255,255,0.15);border-radius:var(--radius-sm);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;background:rgba(255,255,255,0.05)}
+.pm-btn.selected{border-color:var(--gold);background:rgba(201,168,76,0.15)}
+.pm-icon{font-size:18px;margin-bottom:4px}
+.pm-name{font-size:11px;font-weight:600;color:rgba(255,255,255,0.7)}
+.pm-btn.selected .pm-name{color:var(--gold2)}
+.submit-bar{position:fixed;bottom:0;left:0;right:0;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--border);z-index:50}
+.btn-submit{width:100%;background:linear-gradient(135deg,var(--dark),var(--dark2));color:#fff;border:none;border-radius:var(--radius-sm);padding:15px;font-family:'Cairo',sans-serif;font-size:15px;font-weight:800;cursor:pointer}
+.btn-submit:active{opacity:0.85}
+.success-screen{display:none;position:fixed;inset:0;background:var(--surface2);z-index:100;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center}
+.success-screen.show{display:flex}
+.success-icon{width:80px;height:80px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:20px;box-shadow:0 8px 32px rgba(201,168,76,0.3)}
+.success-title{font-size:22px;font-weight:800;margin-bottom:8px}
+.success-sub{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:28px}
+.btn-wa{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#25D366;color:#fff;border:none;border-radius:var(--radius-sm);padding:15px;font-family:'Cairo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;margin-bottom:10px}
+.btn-back{width:100%;background:var(--surface);color:var(--text2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px;font-family:'Cairo',sans-serif;font-size:14px;cursor:pointer}
+.instructions{background:linear-gradient(135deg,#fdf9f0,#fff8ee);border:1px solid rgba(201,168,76,0.25);border-radius:var(--radius-sm);padding:18px 16px;margin-bottom:18px;text-align:right}
+.inst-title{font-size:13px;font-weight:800;color:var(--gold);margin-bottom:14px;text-align:center;letter-spacing:0.03em}
+.inst-section{margin-bottom:14px}
+.inst-section:last-child{margin-bottom:0}
+.inst-hdr{font-size:13px;font-weight:800;color:#1a0a0f;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.inst-item{font-size:12px;color:#5a4050;line-height:1.8;padding-right:10px;position:relative}
+.inst-item::before{content:'–';position:absolute;right:0;color:var(--gold)}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--dark);color:#fff;padding:11px 24px;border-radius:99px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:all 0.25s;z-index:999;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.loading{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center}
+.loading.show{display:flex}
+.spinner{width:48px;height:48px;border:4px solid rgba(201,168,76,0.3);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="brand-ring">📷</div>
+  <div class="brand-title">Islam <span>Saeid</span> Photography</div>
+  <div class="brand-sub">Capturing Timeless Moments</div>
+  <div class="social-row">
+    <a href="https://wa.me/201008194341" class="social-btn s-wa" target="_blank">💬 واتساب</a>
+    <a href="https://www.instagram.com/islamsaeidphotographer/" class="social-btn s-ig" target="_blank">📸 إنستغرام</a>
+    <a href="https://web.facebook.com/islam.saeid.ph" class="social-btn s-fb" target="_blank">👍 فيسبوك</a>
+  </div>
+</div>
+
+<div class="steps">
+  <div class="step-pill active" id="s1"></div>
+  <div class="step-pill" id="s2"></div>
+  <div class="step-pill" id="s3"></div>
+</div>
+
+<div class="form-wrap">
+  <!-- STEP 1 -->
+  <div class="card" id="secType">
+    <div class="card-head"><div class="card-icon">🎯</div><div><div class="card-title">نوع التصوير</div><div class="card-sub">الخطوة 1 من 3</div></div></div>
+    <div class="card-body">
+      <div class="type-grid">
+        <div class="type-card" onclick="selType('زفاف')" id="t_زفاف"><div class="type-icon">💍</div><div class="type-name">زفاف</div><div class="type-sub">Wedding</div></div>
+        <div class="type-card" onclick="selType('خطوبة')" id="t_خطوبة"><div class="type-icon">💑</div><div class="type-name">خطوبة</div><div class="type-sub">Engagement</div></div>
+        <div class="type-card" onclick="selType('كتب كتاب')" id="t_كتب كتاب"><div class="type-icon">📜</div><div class="type-name">كتب كتاب</div><div class="type-sub">Katb Ketab</div></div>
+        <div class="type-card" onclick="selType('قاعة فقط')" id="t_قاعة فقط"><div class="type-icon">🏛️</div><div class="type-name">قاعة فقط</div><div class="type-sub">Hall Only</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="card" id="secPkg" style="display:none">
+    <div class="card-head"><div class="card-icon">📦</div><div><div class="card-title">اختر الباقة</div><div class="card-sub">الخطوة 2 من 3</div></div></div>
+    <div class="card-body">
+      <div class="note-bar">⚠️ الأسعار غير شاملة مكان التصوير</div>
+      <div id="pkgList"></div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="card" id="secForm" style="display:none">
+    <div class="card-head"><div class="card-icon">👤</div><div><div class="card-title">بياناتك الشخصية</div><div class="card-sub">الخطوة 3 من 3</div></div></div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="fg"><label>👤 اسم العريس *</label><input type="text" id="f_groom" placeholder="محمد علي"></div>
+        <div class="fg"><label>👰 اسم العروسة *</label><input type="text" id="f_bride" placeholder="فاطمة أحمد"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>📞 رقم العريس *</label><input type="tel" id="f_phone1" placeholder="01xxxxxxxxxx"></div>
+        <div class="fg"><label>📞 رقم العروسة</label><input type="tel" id="f_phone2" placeholder="01xxxxxxxxxx"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>📅 تاريخ التصوير</label><input type="date" id="f_date"></div>
+        <div class="fg"><label>⏰ وقت البداية</label><input type="time" id="f_time"></div>
+      </div>
+      <div class="fg"><label>📍 مكان السيشن</label><input type="text" id="f_session" placeholder="كورنيش النيل، الأهرامات..."></div>
+      <div class="fg"><label>🏛️ مكان القاعة</label><input type="text" id="f_hall" placeholder="اسم الفندق أو القاعة"></div>
+
+      <div class="pay-summary">
+        <div class="pay-row"><span class="pay-label">الباقة</span><span class="pay-val gold" id="sum_pkg">—</span></div>
+        <div class="pay-row" style="margin-bottom:0"><span class="pay-label">إجمالي السعر</span><span class="pay-val" id="sum_total">—</span></div>
+        <hr class="pay-divider">
+        <div class="pay-label" style="color:rgba(255,255,255,0.6);margin-bottom:8px">💵 العربون المدفوع (جنيه)</div>
+        <input type="number" class="deposit-input" id="f_deposit" placeholder="أدخل مبلغ العربون" oninput="calcRem()">
+        <div class="pay-label" style="color:rgba(255,255,255,0.6);margin:12px 0 8px">طريقة الدفع</div>
+        <div class="payment-methods">
+          <div class="pm-btn" onclick="selPay('نقدي')" id="pm_نقدي"><div class="pm-icon">💵</div><div class="pm-name">نقدي</div></div>
+          <div class="pm-btn" onclick="selPay('فودافون كاش')" id="pm_فودافون كاش"><div class="pm-icon">📱</div><div class="pm-name">فودافون كاش</div></div>
+          <div class="pm-btn" onclick="selPay('إنستاباي')" id="pm_إنستاباي"><div class="pm-icon">💳</div><div class="pm-name">إنستاباي</div></div>
+        </div>
+        <hr class="pay-divider">
+        <div class="pay-row" style="margin-bottom:0"><span class="pay-label">المبلغ الباقي</span><span class="pay-val green" id="sum_rem">—</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="submit-bar">
+  <button class="btn-submit" onclick="submitBooking()">📲 إرسال طلب الحجز</button>
+</div>
+
+<div class="success-screen" id="successScreen">
+  <div class="success-icon">✅</div>
+  <div class="success-title" id="successTitle">تم تسجيل حجزك!</div>
+  <div class="success-sub" id="successMsg"></div>
+
+  <div class="instructions">
+    <div class="inst-title">📋 تعليمات مهمة — يرجى القراءة</div>
+
+    <div class="inst-section">
+      <div class="inst-hdr">1️⃣ الالتزام بالموعد</div>
+      <div class="inst-item">الالتزام بموعد بدء السيشن مهم جدًا علشان نطلع بأفضل نتيجة.</div>
+      <div class="inst-item">أي تأخير يتم خصمه من وقت السيشن، ويتحمل مسؤوليته العريس.</div>
+    </div>
+
+    <div class="inst-section">
+      <div class="inst-hdr">3️⃣ مدة السيشن</div>
+      <div class="inst-item">مدة السيشن الأساسية ساعتين.</div>
+      <div class="inst-item">في حالة الرغبة في زيادة الوقت، يتم الاتفاق مسبقًا بتكلفة إضافية.</div>
+    </div>
+
+    <div class="inst-section">
+      <div class="inst-hdr">4️⃣ التعاون أثناء التصوير</div>
+      <div class="inst-item">التعاون والالتزام بالتوجيهات أثناء التصوير بيساعدنا نطلع صور أجمل وطبيعية أكتر.</div>
+      <div class="inst-item">هدفنا كلنا إن النتيجة تكون على مستوى يفرّحكم 👌</div>
+    </div>
+
+    <div class="inst-section">
+      <div class="inst-hdr">5️⃣ طريقة تسليم الصور</div>
+      <div class="inst-item">الصور بتتسلم ديجيتال على لينك Drive بجودة عالية.</div>
+      <div class="inst-item">في حالة الاتفاق على طباعة أو ألبوم، يتم تحديده مسبقًا.</div>
+    </div>
+
+    <div class="inst-section">
+      <div class="inst-hdr">6️⃣ مدة استلام الصور</div>
+      <div class="inst-item">مدة تسليم الصور النهائية من 15 إلى 20 يوم من تاريخ السيشن.</div>
+    </div>
+
+    <div class="inst-section">
+      <div class="inst-hdr">7️⃣ الحجز والدفع</div>
+      <div class="inst-item">يتم تأكيد الحجز بعربون مسبق غير قابل للاسترداد.</div>
+      <div class="inst-item">باقي المبلغ يتم سداده يوم التصوير.</div>
+    </div>
+
+    <div class="inst-section">
+      <div class="inst-hdr">8️⃣ التأجيل أو الإلغاء</div>
+      <div class="inst-item">في حالة التأجيل، يُرجى الإبلاغ قبل الموعد بوقت كافي لإعادة التنسيق.</div>
+    </div>
+  </div>
+
+  <a class="btn-wa" id="waAdminLink" href="#" target="_blank">📲 أرسل الحجز للمصور</a>
+  <a class="btn-wa" id="waClientLink" href="#" target="_blank" style="background:#128C7E;margin-bottom:10px">💬 احتفظ بنسخة من حجزك</a>
+  <button class="btn-back" onclick="resetForm()">🔄 حجز جديد</button>
+</div>
+
+<div class="loading" id="loading"><div class="spinner"></div></div>
+<div class="toast" id="toast"></div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC4kXbfYZfZNglj_sHUTo7jKkHVQqBEHJI",
+  authDomain: "isp-bookings.firebaseapp.com",
+  projectId: "isp-bookings",
+  storageBucket: "isp-bookings.firebasestorage.app",
+  messagingSenderId: "352609960285",
+  appId: "1:352609960285:web:dbcc35e65020c4fa1e28b4"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const PACKAGES = {
+  'زفاف':[
+    {name:'باقة 1',price:3500,details:'تصوير سيشن بعدد صور مفتوح'},
+    {name:'باقة 2',price:4500,details:'تصوير السيشن + تصوير القاعة'},
+    {name:'باقة 3',price:6000,details:'تصوير السيشن + تصوير القاعة\nألبوم 30×45 + تابلوه 40×60'},
+    {name:'باقة 4',price:8000,details:'تصوير السيشن + تصوير القاعة\nألبوم 30×80 + تابلوه 50×70'},
+  ],
+  'خطوبة':[
+    {name:'باقة 1',price:3000,details:'تصوير سيشن بعدد صور مفتوح'},
+    {name:'باقة 2',price:4000,details:'تصوير السيشن + تصوير القاعة'},
+    {name:'باقة 3',price:5500,details:'تصوير السيشن + تصوير القاعة\nألبوم 30×45 + تابلوه 40×60'},
+  ],
+  'كتب كتاب':[
+    {name:'باقة 1',price:3000,details:'تصوير سيشن بعدد صور مفتوح'},
+    {name:'باقة 2',price:4000,details:'تصوير السيشن + تصوير القاعة'},
+    {name:'باقة 3',price:5500,details:'تصوير السيشن + تصوير القاعة\nألبوم 30×45 + تابلوه 40×60'},
+  ],
+  'قاعة فقط':[
+    {name:'باقة 1',price:800,details:'تصوير قاعة لمدة ساعتين'},
+    {name:'باقة 2',price:1000,details:'تصوير قاعة لمدة 3 ساعات'},
+  ],
+};
+
+let selType=null, selPkg=null, selPayMethod=null;
+
+function fmt(n){return Number(n).toLocaleString('ar-EG');}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function steps(n){for(let i=1;i<=3;i++)document.getElementById('s'+i).classList.toggle('active',i<=n);}
+
+window.selType = function(type){
+  selType=type; selPkg=null;
+  document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('t_'+type).classList.add('selected');
+  const pkgs=PACKAGES[type];
+  document.getElementById('pkgList').innerHTML=pkgs.map((p,i)=>`
+    <div class="pkg-card" id="pk_${i}" onclick="selPkgFn(${i})">
+      <div class="pkg-top">
+        <div class="pkg-name">📷 ${p.name}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="pkg-price">${fmt(p.price)} ج</div>
+          <div class="pkg-check" id="ck_${i}"></div>
+        </div>
+      </div>
+      <div class="pkg-details">${p.details.replace(/\n/g,'<br>')}</div>
+    </div>`).join('');
+  document.getElementById('secPkg').style.display='block';
+  document.getElementById('secForm').style.display='none';
+  steps(2);
+  setTimeout(()=>document.getElementById('secPkg').scrollIntoView({behavior:'smooth',block:'start'}),100);
+};
+
+window.selPkgFn = function(i){
+  const pkgs=PACKAGES[selType];
+  selPkg={...pkgs[i]};
+  document.querySelectorAll('.pkg-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('.pkg-check').forEach(c=>c.textContent='');
+  document.getElementById('pk_'+i).classList.add('selected');
+  document.getElementById('ck_'+i).textContent='✓';
+  document.getElementById('sum_pkg').textContent=selPkg.name;
+  document.getElementById('sum_total').textContent=fmt(selPkg.price)+' جنيه';
+  document.getElementById('f_deposit').value='';
+  document.getElementById('sum_rem').textContent='—';
+  document.getElementById('secForm').style.display='block';
+  steps(3);
+  setTimeout(()=>document.getElementById('secForm').scrollIntoView({behavior:'smooth',block:'start'}),100);
+};
+
+window.selPay = function(method){
+  selPayMethod=method;
+  document.querySelectorAll('.pm-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('pm_'+method).classList.add('selected');
+};
+
+window.calcRem = function(){
+  if(!selPkg)return;
+  const d=parseFloat(document.getElementById('f_deposit').value)||0;
+  document.getElementById('sum_rem').textContent=fmt(Math.max(0,selPkg.price-d))+' جنيه';
+};
+
+window.submitBooking = async function(){
+  if(!selType){showToast('⚠️ اختر نوع التصوير');return;}
+  if(!selPkg){showToast('⚠️ اختر الباقة');return;}
+  const groom=document.getElementById('f_groom').value.trim();
+  const bride=document.getElementById('f_bride').value.trim();
+  const phone1=document.getElementById('f_phone1').value.trim();
+  if(!groom||!bride){showToast('⚠️ أدخل اسم العريس والعروسة');return;}
+  if(!phone1){showToast('⚠️ أدخل رقم التليفون');return;}
+
+  const phone2=document.getElementById('f_phone2').value.trim();
+  const date=document.getElementById('f_date').value;
+  const time=document.getElementById('f_time').value;
+  const session=document.getElementById('f_session').value.trim();
+  const hall=document.getElementById('f_hall').value.trim();
+  const deposit=parseFloat(document.getElementById('f_deposit').value)||0;
+  const remaining=Math.max(0,selPkg.price-deposit);
+
+  document.getElementById('loading').classList.add('show');
+
+  try {
+    await addDoc(collection(db,'bookings'),{
+      groom, bride, phone1, phone2,
+      type: selType,
+      package: selPkg.name,
+      packageDetails: selPkg.details,
+      price: selPkg.price,
+      date, time,
+      sessionLocation: session,
+      hallLocation: hall,
+      deposit, remaining,
+      paymentMethod: selPayMethod||'غير محدد',
+      status: 'pending',
+      createdAt: serverTimestamp()
+    });
+
+    document.getElementById('loading').classList.remove('show');
+
+    const dateStr=date?new Date(date+'T00:00:00').toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'}):'غير محدد';
+    const msg=`🎉 *طلب حجز جديد*\n━━━━━━━━━━━━━━━━\n📷 *Islam Saeid Photography*\n━━━━━━━━━━━━━━━━\n👤 *العريس:* ${groom}\n👰 *العروسة:* ${bride}\n📞 *رقم العريس:* ${phone1}\n📞 *رقم العروسة:* ${phone2||'—'}\n━━━━━━━━━━━━━━━━\n🎯 *نوع التصوير:* ${selType}\n📦 *الباقة:* ${selPkg.name}\n📝 *التفاصيل:* ${selPkg.details.replace(/\n/g,', ')}\n━━━━━━━━━━━━━━━━\n📅 *التاريخ:* ${dateStr}\n⏰ *الوقت:* ${time||'—'}\n📍 *مكان السيشن:* ${session||'—'}\n🏛️ *مكان القاعة:* ${hall||'—'}\n━━━━━━━━━━━━━━━━\n💰 *إجمالي الباقة:* ${fmt(selPkg.price)} جنيه\n💵 *العربون:* ${fmt(deposit)} جنيه (${selPayMethod||'—'})\n⏳ *الباقي:* ${fmt(remaining)} جنيه\n━━━━━━━━━━━━━━━━\n⚠️ السعر غير شامل مكان التصوير`;
+
+    document.getElementById('waAdminLink').href=`https://wa.me/201008194341?text=${encodeURIComponent(msg)}`;
+    document.getElementById('successMsg').textContent=`مبروك ${groom} و${bride}! 🎊 تم تسجيل حجزكم بنجاح. برجاء قراءة التعليمات أدناه قبل يوم التصوير.`;
+    document.getElementById('successScreen').classList.add('show');
+  } catch(e){
+    document.getElementById('loading').classList.remove('show');
+    showToast('⚠️ حدث خطأ، حاول تاني');
+    console.error(e);
+  }
+};
+
+window.resetForm=function(){
+  selType=null;selPkg=null;selPayMethod=null;
+  document.querySelectorAll('.type-card,.pkg-card,.pm-btn').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('secPkg').style.display='none';
+  document.getElementById('secForm').style.display='none';
+  ['f_groom','f_bride','f_phone1','f_phone2','f_session','f_hall','f_time','f_date','f_deposit'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('successScreen').classList.remove('show');
+  steps(1); window.scrollTo({top:0,behavior:'smooth'});
+};
+</script>
+</body>
+</html>

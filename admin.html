@@ -744,16 +744,21 @@ function waPhone(raw){
 }
 
 /* ===== AUTH (Firebase Authentication, free) ===== */
-auth.onAuthStateChanged(u=>{
-  if(u&&u.email===ADMIN_EMAIL){$('loginScreen').classList.add('hide');startLive();}
-  else{$('loginScreen').classList.remove('hide');}
-});
+// الجلسة بتفضل مع الـ refresh، وبتتمسح لما تقفل التبويب/الصفحة، فالدخول الجاي يطلب الباسورد
+const okFlag={get:()=>{try{return sessionStorage.getItem('ispAdminOk');}catch(e){return null;}},set:()=>{try{sessionStorage.setItem('ispAdminOk','1');}catch(e){}},clear:()=>{try{sessionStorage.removeItem('ispAdminOk');}catch(e){}}};
+auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
+  .then(()=>{if(!okFlag.get())return auth.signOut();})
+  .catch(e=>console.error(e))
+  .then(()=>auth.onAuthStateChanged(u=>{
+    if(u&&u.email===ADMIN_EMAIL){$('loginScreen').classList.add('hide');startLive();}
+    else{$('loginScreen').classList.remove('hide');}
+  }));
 window.checkLogin=async function(){
-  try{await auth.signInWithEmailAndPassword(ADMIN_EMAIL,$('pwInput').value);$('loginErr').style.display='none';}
+  try{await auth.signInWithEmailAndPassword(ADMIN_EMAIL,$('pwInput').value);okFlag.set();$('loginErr').style.display='none';}
   catch(e){$('loginErr').style.display='block';$('pwInput').value='';}
 };
 window.logout=async function(){
-  unsubs.forEach(f=>f());unsubs=[];liveStarted=false;bookings=[];reminders={};
+  okFlag.clear();unsubs.forEach(f=>f());unsubs=[];liveStarted=false;bookings=[];reminders={};
   await auth.signOut();$('pwInput').value='';
 };
 

@@ -149,7 +149,7 @@ body{font-family:'Cairo',sans-serif;background:var(--surface2);color:var(--text)
 .chip{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);margin:0 0 4px 4px}
 .chip.warn{background:#fff3e0;color:#e65100;border-color:#ffcc80}
 .chip.ok{background:#e8f5eb;color:var(--green);border-color:#a8d5b0}
-.act-row{display:flex;gap:8px;margin-top:10px}
+.act-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.act-row a{flex:1;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 6px;font-size:13px;font-weight:700;min-height:44px;min-width:90px}
 .act-row button{flex:1;border:1px solid var(--border);background:var(--surface2);border-radius:var(--radius-sm);padding:10px 6px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;min-height:44px}
 .act-row .wa{background:#e8f5e9;color:#2d7a3a}
 .act-row .pri{background:var(--dark);color:var(--gold2)}
@@ -330,7 +330,7 @@ async function loadBookings(){
 function renderStats(){
   const active=bookings.filter(b=>!isArch(b));
   const allActive=bookings.filter(b=>b.status!=='done'||isExpired(b));
-  const totalDep=bookings.reduce((s,b)=>s+Number(b.deposit||0),0);
+  const totalDep=bookings.reduce((s,b)=>s+Number(b.deposit||0)+Number(b.paid||0),0);
   const totalRem=bookings.reduce((s,b)=>s+Number(b.remaining||0),0);
   const totalPaid=bookings.reduce((s,b)=>s+(Number(b.price||0)-Number(b.remaining||0)),0);
   document.getElementById('statsGrid').innerHTML=`
@@ -344,7 +344,7 @@ function renderStats(){
 /* ===== CARD ===== */
 function bookingCard(b,archived=false){
   const si=statusInfo(b.status);
-  const pct=b.price>0?Math.round((b.deposit/b.price)*100):0;
+  const pct=b.price>0?Math.round(((Number(b.deposit||0)+Number(b.paid||0))/b.price)*100):0;
   const days=daysUntil(b.date);
   const todayTag=(!archived&&days===0)?'<span class="today-tag">🔴 اليوم</span>':(!archived&&days===1)?'<span class="today-tag" style="background:#e8f1fb;color:#1a5fa5;border-color:#90caf9">🔵 غداً</span>':'';
   const acc=archived?'archived':si.acc;
@@ -359,7 +359,7 @@ function bookingCard(b,archived=false){
         <div class="bm">📍 ${esc(b.sessionLocation)||'—'}</div><div class="bm">📞 ${esc(b.phone1)||'—'}</div>
       </div>
       <div class="bpay">
-        <div class="bpay-row"><span style="color:var(--text2)">نسبة السداد ${pct}%</span><div style="display:flex;gap:10px"><span class="paid">+${fmt(b.deposit||0)} ج</span><span class="rem">-${fmt(b.remaining||0)} ج</span></div></div>
+        <div class="bpay-row"><span style="color:var(--text2)">نسبة السداد ${pct}%</span><div style="display:flex;gap:10px"><span class="paid">+${fmt(Number(b.deposit||0)+Number(b.paid||0))} ج</span><span class="rem">-${fmt(b.remaining||0)} ج</span></div></div>
         <div class="progress"><div class="progress-fill" style="width:${pct}%"></div></div>
       </div>
     </div>
@@ -395,7 +395,7 @@ window.openDetail=function(id){
   if(!b)return;
   currentId=id;markRead(id);
   const si=statusInfo(b.status);
-  const pct=b.price>0?Math.round((b.deposit/b.price)*100):0;
+  const pct=b.price>0?Math.round(((Number(b.deposit||0)+Number(b.paid||0))/b.price)*100):0;
   const archived=isArch(b);
 
   document.getElementById('detailBody').innerHTML=`
@@ -418,7 +418,7 @@ window.openDetail=function(id){
         <div><div class="di-label">اسم العريس</div><input class="edit-input" id="e_groom" value="${esc(b.groom)||''}"></div>
         <div><div class="di-label">اسم العروسة</div><input class="edit-input" id="e_bride" value="${esc(b.bride)||''}"></div>
         <div><div class="di-label">رقم العريس</div><input class="edit-input" id="e_phone1" value="${esc(b.phone1)||''}" type="tel" style="direction:ltr;text-align:right"></div>
-        <div><div class="di-label">رقم العروسة</div><input class="edit-input" id="e_phone2" value="${esc(b.phone2)||''}" type="tel" style="direction:ltr;text-align:right"></div>
+        <div><div class="di-label">رقم اتصال آخر</div><input class="edit-input" id="e_phone2" value="${esc(b.phone2)||''}" type="tel" style="direction:ltr;text-align:right"></div>
       </div>
     </div>
 
@@ -451,6 +451,7 @@ window.openDetail=function(id){
           </select>
         </div>
         <div><div class="di-label">العربون المدفوع</div><input class="edit-input" id="e_deposit" type="number" value="${b.deposit||0}" oninput="recalcRemainingFromPrice()"></div>
+        <div><div class="di-label">المبلغ المدفوع (بعد العربون)</div><input class="edit-input" id="e_paid" type="number" value="${b.paid||0}" oninput="recalcRemainingFromPrice()" style="color:var(--green);font-weight:700"></div>
         <div><div class="di-label">المبلغ الباقي</div><input class="edit-input" id="e_remaining" type="number" value="${b.remaining||0}" style="color:var(--amber);font-weight:700"></div>
       </div>
       <div class="progress" style="margin-bottom:12px"><div class="progress-fill" style="width:${pct}%"></div></div>
@@ -497,6 +498,10 @@ window.openDetail=function(id){
           <span style="color:var(--text2)">العربون المدفوع مسبقاً</span>
           <span style="font-weight:700;color:var(--green)">+${fmt(b.deposit||0)} ج</span>
         </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">
+          <span style="color:var(--text2)">المبلغ المدفوع بعد العربون</span>
+          <span style="font-weight:700;color:var(--green)">+${fmt(b.paid||0)} ج</span>
+        </div>
         <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:800;border-top:1px solid #eee;padding-top:8px">
           <span style="color:var(--amber)">الباقي المطلوب</span>
           <span style="color:var(--amber)">${fmt(b.remaining||0)} ج</span>
@@ -507,7 +512,7 @@ window.openDetail=function(id){
       <div id="payNowSummary" style="background:#fff;border-radius:10px;padding:10px;margin-bottom:10px;font-size:12px">
         <div style="display:flex;justify-content:space-between;margin-bottom:4px">
           <span style="color:var(--text2)">إجمالي المدفوع بعد الدفعة</span>
-          <span style="font-weight:700;color:var(--green)" id="totalPaidAfter">${fmt((b.deposit||0)+(b.remaining||0))} ج</span>
+          <span style="font-weight:700;color:var(--green)" id="totalPaidAfter">${fmt(Number(b.deposit||0)+Number(b.paid||0)+Number(b.remaining||0))} ج</span>
         </div>
         <div style="display:flex;justify-content:space-between">
           <span style="color:var(--text2)">المتبقي بعد الدفعة</span>
@@ -527,7 +532,7 @@ window.openDetail=function(id){
     <!-- أزرار -->
     <div class="dactions">
       ${b.phone1?`<a class="btn-call" href="tel:${esc(b.phone1)}">📞 اتصل</a>`:''}
-      ${b.phone1&&b.status!=='canceled'?`<button class="btn-call" onclick="openWa('${id}')" style="background:#e8f5e9;color:#2d7a3a">💬 واتساب</button>`:''}
+      ${waDirect(b,id,'contact',true)}
       <button class="btn-action" onclick="closeDetail()">✕ إغلاق</button>
       <button class="btn-del" onclick="deleteBooking('${id}')">🗑 حذف</button>
     </div>`;
@@ -539,7 +544,8 @@ window.openDetail=function(id){
 window.recalcRemainingFromPrice=function(){
   const price=parseFloat(document.getElementById('e_price').value)||0;
   const deposit=parseFloat(document.getElementById('e_deposit').value)||0;
-  document.getElementById('e_remaining').value=Math.max(0,price-deposit);
+  const paid=parseFloat(document.getElementById('e_paid').value)||0;
+  document.getElementById('e_remaining').value=Math.max(0,price-deposit-paid);
 };
 window.applyDiscount=function(){
   const orig=parseFloat(document.getElementById('e_origPrice').value)||0;
@@ -571,6 +577,7 @@ window.saveEdit=async function(id){
     discount:parseFloat(document.getElementById('e_discount').value)||0,
     paymentMethod:document.getElementById('e_payMethod').value,
     deposit:parseFloat(document.getElementById('e_deposit').value)||0,
+    paid:parseFloat(document.getElementById('e_paid').value)||0,
     remaining,status,
     updatedAt:firebase.firestore.FieldValue.serverTimestamp()
   };
@@ -592,7 +599,7 @@ window.calcNewRemaining=function(id){
   if(!b)return;
   const payNow=parseFloat(document.getElementById('payNowAmount').value)||0;
   const newRemain=Math.max(0,(b.remaining||0)-payNow);
-  const newTotalPaid=(b.deposit||0)+((b.price||0)-newRemain);
+  const newTotalPaid=Number(b.deposit||0)+Number(b.paid||0)+Math.min(payNow,Number(b.remaining||0));
   const el1=document.getElementById('totalPaidAfter');
   const el2=document.getElementById('remainAfter');
   if(el1)el1.textContent=fmt(newTotalPaid)+' ج';
@@ -606,7 +613,7 @@ window.markPaidAmount=async function(id){
   const payNow=parseFloat(document.getElementById('payNowAmount').value)||0;
   if(payNow<=0){showToast('⚠️ أدخل المبلغ المستلم');return;}
   const newRemain=Math.max(0,(b.remaining||0)-payNow);
-  const newDeposit=(b.deposit||0)+payNow;
+  const newPaid=Number(b.paid||0)+Math.min(payNow,Number(b.remaining||0));
   const newStatus=newRemain<=0?'done':b.status;
   if(!confirm(`تأكيد استلام ${fmt(payNow)} جنيه؟
 المتبقي بعد الدفعة: ${fmt(newRemain)} جنيه`))return;
@@ -614,11 +621,11 @@ window.markPaidAmount=async function(id){
   try{
     await db.collection('bookings').doc(id).update({
       remaining:newRemain,
-      deposit:newDeposit,
+      paid:newPaid,
       status:newStatus,
       paidAt:newRemain<=0?firebase.firestore.FieldValue.serverTimestamp():b.paidAt||null
     });
-    if(b){b.remaining=newRemain;b.deposit=newDeposit;b.status=newStatus;}
+    if(b){b.remaining=newRemain;b.paid=newPaid;b.status=newStatus;}
     renderAll();
     closeDetail();
     showToast(newRemain<=0?'🎉 تم السداد الكامل — الحجز في الأرشيف':`✅ تم استلام ${fmt(payNow)} ج — الباقي ${fmt(newRemain)} ج`);
@@ -835,7 +842,7 @@ function renderReminders(){
   $('remList').innerHTML=list.length?list.map(({b,k,id})=>`<div class="bcard"><div class="bacc ${k==='1d'?'pending':'confirmed'}"></div><div class="bbody">
     <div class="btop"><div class="bnames">${esc(b.groom)||'—'}<span class="amp">&</span>${esc(b.bride)||'—'}</div><span class="chip warn">${dd(b)===0?'اليوم':dd(b)===1?'غدًا':'بعد '+dd(b)+' أيام'}</span></div>
     <div class="bmeta"><div class="bm">📅 ${fmtDate(b.date)}</div><div class="bm">⏰ ${esc(b.time)||'—'}</div><div class="bm">📍 ${esc(b.hallLocation||b.sessionLocation)||'—'}</div></div>
-    <div class="act-row"><button class="wa" onclick="openWa('${b.id}','reminder')">💬 واتساب</button><button onclick="openDetail('${b.id}')">تفاصيل</button><button class="pri" onclick="handleReminder('${id}')">✓ تم التعامل</button></div></div></div>`).join(''):'<div class="empty"><div>⏰</div><p>لا توجد تذكيرات حاليًا</p></div>';
+    <div class="act-row">${waDirect(b,b.id,'reminder')}<button onclick="openDetail('${b.id}')">تفاصيل</button><button class="pri" onclick="handleReminder('${id}')">✓ تم التعامل</button></div></div></div>`).join(''):'<div class="empty"><div>⏰</div><p>لا توجد تذكيرات حاليًا</p></div>';
 }
 window.handleReminder=async function(id){
   if(reminders[id])reminders[id].status='handled';renderReminders();renderMini();
@@ -868,11 +875,19 @@ window.renderUpcoming=function(){
     <div class="btop"><div class="bnames">${esc(b.groom)||'—'}<span class="amp">&</span>${esc(b.bride)||'—'}</div><span class="sbadge ${si.cls}">${si.label}</span></div>
     <div style="margin-bottom:6px">${d>=0&&!isArch(b)?`<span class="chip warn">${d===0?'اليوم':d===1?'غدًا':'بعد '+d+' يوم'}</span>`:''}${payChip(b)}${!isArch(b)&&b.status!=='confirmed'?'<span class="chip">غير مؤكد</span>':''}</div>
     <div class="bmeta"><div class="bm">📅 ${fmtDate(b.date)}</div><div class="bm">⏰ ${esc(b.time)||'—'}</div><div class="bm">🏛 ${esc(b.hallLocation)||'—'}</div><div class="bm">📍 ${esc(b.sessionLocation)||'—'}</div><div class="bm" style="grid-column:1/-1">📦 ${esc(b.package)||'—'}</div></div>
-    <div class="bpay-row"><span>الإجمالي ${fmt(b.price||0)} ج</span><span class="paid">عربون ${fmt(b.deposit||0)} ج</span><span class="rem">باقي ${fmt(b.remaining||0)} ج</span></div>
-    <div class="act-row"><button onclick="openDetail('${b.id}')">تفاصيل</button>${b.status==='canceled'?'':`<button class="wa" onclick="openWa('${b.id}')">💬 واتساب</button>`}</div></div></div>`;}).join(''):'<div class="empty"><div>📅</div><p>لا توجد نتائج</p></div>';
+    <div class="bpay-row"><span>الإجمالي ${fmt(b.price||0)} ج</span><span class="paid">عربون ${fmt(b.deposit||0)} ج</span>${Number(b.paid||0)>0?`<span class="paid">مدفوع ${fmt(b.paid)} ج</span>`:''}<span class="rem">باقي ${fmt(b.remaining||0)} ج</span></div>
+    <div class="act-row"><button onclick="openDetail('${b.id}')">تفاصيل</button>${b.status==='canceled'?'':waDirect(b,b.id,'contact')}</div></div></div>`;}).join(''):'<div class="empty"><div>📅</div><p>لا توجد نتائج</p></div>';
 };
 
 /* ===== WHATSAPP ===== */
+/* زرار واتساب مباشر: بيفتح محادثة العريس برسالة جاهزة (تتعدل جوه واتساب) والإرسال بإيدك */
+function waDirect(b,id,kind,detail){
+  if(!b.phone1||b.status==='canceled')return '';
+  const p=waPhone(b.phone1),tpl=`<button class="${detail?'btn-call':''}" onclick="openWa('${id}','${kind}')" ${detail?'':''}>📝 رسائل جاهزة</button>`;
+  if(!p)return `<button class="${detail?'btn-call':'wa'}" onclick="showToast('⚠️ رقم العريس غير صالح لواتساب')">💬 واتساب</button>`;
+  return `<a class="${detail?'btn-call':'wa'}" href="https://wa.me/${p}?text=${encodeURIComponent(waMsg(kind,b))}" target="_blank" rel="noopener" style="${detail?'background:#25a244;color:#fff;':''}text-decoration:none;text-align:center;display:inline-flex;align-items:center;justify-content:center">💬 واتساب</a>${tpl}`;
+}
+
 function waMsg(kind,b){
   const g=b.groom?` أستاذ ${b.groom}`:'',loc=b.hallLocation||b.sessionLocation||'';
   const rem=Number(b.remaining||0),dep=Number(b.deposit||0),d=dd(b);

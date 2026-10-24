@@ -110,6 +110,23 @@ button,input,select{font-family:inherit}
 .spinner{width:46px;height:46px;border:3px solid rgba(184,150,62,0.3);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation-duration:2s!important}}
+.fg input[type=tel]{direction:ltr;text-align:right}
+.time24{display:flex;align-items:center;gap:6px}
+.time24 select{flex:1;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 8px;font-size:16px;min-height:48px;color:var(--text);text-align:center}
+.time24 span{font-weight:800;color:var(--gold)}
+.extra-wrap{display:none;flex-direction:column;gap:12px;margin-top:6px}
+.extra-toggle{background:linear-gradient(135deg,#B8963E,#D9BC78)!important;color:#0c0c0c!important;border:none!important;box-shadow:0 4px 16px rgba(184,150,62,0.4);padding:17px 16px!important;font-size:16px!important;font-weight:800!important}
+.extra-toggle .badge{background:#0c0c0c;color:var(--gold2)}
+.extra-toggle .chev{color:#0c0c0c!important}
+.extra-panel{background:var(--surface);border:1.5px solid var(--gold);border-radius:var(--radius);padding:14px;flex-direction:column;gap:10px}
+.extra-total{font-size:14px;color:var(--text2);text-align:center;border-top:1px dashed var(--border);padding-top:10px}
+.extra-total b{color:var(--gold);font-size:16px}
+.copy-card{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--gold);border-radius:var(--radius);padding:16px;margin-bottom:18px}
+.copy-title{font-size:15px;font-weight:800;margin-bottom:12px}
+.copy-img{width:100%;max-width:300px;height:auto;border-radius:12px;border:1px solid var(--border);margin:0 auto 14px}
+.btn-copy{width:100%;background:linear-gradient(135deg,#B8963E,#D9BC78);color:#0c0c0c;border:none;border-radius:var(--radius-sm);padding:15px;font-size:15px;font-weight:800;cursor:pointer;min-height:52px}
+.btn-copy:disabled{opacity:.6}
+.copy-hint{font-size:12px;color:var(--text2);margin-top:10px;line-height:1.8}
 </style>
 </head>
 <body>
@@ -151,15 +168,6 @@ button,input,select{font-family:inherit}
     <div class="card-body">
       <div class="note-bar">الأسعار غير شاملة مكان التصوير</div>
       <div id="pkgList"></div>
-      <div id="extraSec" style="display:none;flex-direction:column;gap:12px">
-        <button type="button" class="extra-toggle" id="extraToggle" aria-expanded="false" aria-controls="extraBox" onclick="toggleExtraBox()">
-          <span>إضافة باقة أخرى أو خدمات إضافية <span class="badge" id="extraBadge" style="display:none">0</span></span><span class="chev">▾</span>
-        </button>
-        <div id="extraBox" style="display:none;flex-direction:column;gap:10px">
-          <div class="extra-hint">اختر باقة أو أكثر لإضافتها لنفس الحجز، واضغط على الباقة مرة ثانية لإلغائها.</div>
-          <div id="extraList"></div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -171,13 +179,11 @@ button,input,select{font-family:inherit}
         <div class="fg"><label for="f_groom">اسم العريس *</label><input type="text" id="f_groom" placeholder="محمد علي"></div>
         <div class="fg"><label for="f_bride">اسم العروسة *</label><input type="text" id="f_bride" placeholder="فاطمة أحمد"></div>
       </div>
-      <div class="form-row">
-        <div class="fg"><label for="f_phone1">رقم العريس *</label><input type="tel" id="f_phone1" placeholder="01xxxxxxxxxx"></div>
-        <div class="fg"><label for="f_phone2">رقم العروسة</label><input type="tel" id="f_phone2" placeholder="01xxxxxxxxxx"></div>
-      </div>
+      <div class="fg"><label for="f_phone1">رقم العريس *</label><input type="tel" inputmode="tel" autocomplete="tel" id="f_phone1" placeholder="مثال: 01012345678"></div>
+      <div class="fg"><label for="f_phone2">رقم اتصال آخر (اختياري)</label><input type="tel" inputmode="tel" id="f_phone2" placeholder="مثال: 01012345678"></div>
       <div class="form-row">
         <div class="fg"><label for="f_date">تاريخ التصوير</label><input type="date" id="f_date"></div>
-        <div class="fg"><label for="f_time">وقت البداية</label><input type="time" id="f_time"></div>
+        <div class="fg"><label for="f_hh">وقت البداية (24 ساعة)</label><div class="time24" dir="ltr"><select id="f_hh" onchange="syncTime()" aria-label="الساعة"><option value="">ساعة</option></select><span>:</span><select id="f_mm" onchange="syncTime()" aria-label="الدقيقة"><option value="">دقيقة</option></select><input type="hidden" id="f_time"></div></div>
       </div>
       <div class="fg"><label for="f_session">مكان السيشن</label><input type="text" id="f_session" placeholder="كورنيش النيل، الأهرامات..."></div>
       <div class="fg"><label for="f_hall">مكان القاعة</label><input type="text" id="f_hall" placeholder="اسم الفندق أو القاعة"></div>
@@ -200,6 +206,17 @@ button,input,select{font-family:inherit}
       </div>
     </div>
   </div>
+
+  <div id="extraSec" class="extra-wrap" style="display:none">
+    <button type="button" class="extra-toggle" id="extraToggle" aria-expanded="false" aria-controls="extraBox" onclick="toggleExtraBox()">
+      <span>＋ إضافة باقة أخرى أو خدمات إضافية <span class="badge" id="extraBadge" style="display:none">0</span></span><span class="chev">▾</span>
+    </button>
+    <div id="extraBox" class="extra-panel" style="display:none">
+      <div class="extra-hint">اختر باقة أو أكثر لإضافتها لنفس الحجز، واضغط على الباقة مرة ثانية لإلغائها.</div>
+      <div id="extraList"></div>
+      <div class="extra-total">الإجمالي الحالي: <b id="extraTotal">—</b></div>
+    </div>
+  </div>
 </div>
 
 <div class="submit-bar"><div class="submit-in">
@@ -211,6 +228,13 @@ button,input,select{font-family:inherit}
   <div class="success-icon">✓</div>
   <div class="success-title" id="successTitle">تم تسجيل حجزك!</div>
   <div class="success-sub" id="successMsg"></div>
+
+  <div class="copy-card">
+    <div class="copy-title">نسخة من حجزك</div>
+    <img id="copyImg" class="copy-img" alt="نسخة من الحجز" style="display:none">
+    <button type="button" class="btn-copy" id="copyBtn" onclick="saveCopy()" disabled>جاري تجهيز الصورة…</button>
+    <div class="copy-hint" id="copyHint"></div>
+  </div>
 
   <div class="instructions">
     <div class="inst-title">📋 تعليمات مهمة — يرجى القراءة</div>
@@ -372,7 +396,7 @@ function renderSummary(){
   $('sum_total').textContent=fmt(tot)+' جنيه';
   $('barTotal').style.display=list.length?'flex':'none';
   $('barCount').textContent=list.length>1?`${fmt(list.length)} باقات`:'باقة واحدة';
-  $('barSum').textContent=fmt(tot)+' جنيه';
+  $('barSum').textContent=fmt(tot)+' جنيه';$('extraTotal').textContent=fmt(tot)+' جنيه';
   calcRem();
 }
 
@@ -491,11 +515,12 @@ window.submitBooking = async function(){
     const pkgBlock=multi
       ? `📦 *الباقات المختارة:*\n${list.map(p=>`• ${pkgLabel(p)} — ${fmt(p.price)} جنيه\n   ${p.details.replace(/\n/g,', ')}`).join('\n')}`
       : `📦 *الباقة:* ${selPkg.name}\n📝 *التفاصيل:* ${selPkg.details.replace(/\n/g,', ')}`;
-    const msg=`🎉 *طلب حجز جديد*\n━━━━━━━━━━━━━━━━\n📷 *Islam Saeid Photography*\n━━━━━━━━━━━━━━━━\n👤 *العريس:* ${groom}\n👰 *العروسة:* ${bride}\n📞 *رقم العريس:* ${phone1}\n📞 *رقم العروسة:* ${phone2||'—'}\n━━━━━━━━━━━━━━━━\n🎯 *نوع التصوير:* ${selType}\n${pkgBlock}\n━━━━━━━━━━━━━━━━\n📅 *التاريخ:* ${dateStr}\n⏰ *الوقت:* ${time||'—'}\n📍 *مكان السيشن:* ${session||'—'}\n🏛️ *مكان القاعة:* ${hall||'—'}\n━━━━━━━━━━━━━━━━\n💰 *${multi?'الإجمالي':'إجمالي الباقة'}:* ${fmt(total)} جنيه\n💵 *العربون:* ${fmt(deposit)} جنيه (${selPayMethod||'—'})\n⏳ *الباقي:* ${fmt(remaining)} جنيه\n━━━━━━━━━━━━━━━━\n⚠️ السعر غير شامل مكان التصوير`;
+    const msg=`🎉 *طلب حجز جديد*\n━━━━━━━━━━━━━━━━\n📷 *Islam Saeid Photography*\n━━━━━━━━━━━━━━━━\n👤 *العريس:* ${groom}\n👰 *العروسة:* ${bride}\n📞 *رقم العريس:* ${phone1}\n📞 *رقم آخر:* ${phone2||'—'}\n━━━━━━━━━━━━━━━━\n🎯 *نوع التصوير:* ${selType}\n${pkgBlock}\n━━━━━━━━━━━━━━━━\n📅 *التاريخ:* ${dateStr}\n⏰ *الوقت:* ${time||'—'}\n📍 *مكان السيشن:* ${session||'—'}\n🏛️ *مكان القاعة:* ${hall||'—'}\n━━━━━━━━━━━━━━━━\n💰 *${multi?'الإجمالي':'إجمالي الباقة'}:* ${fmt(total)} جنيه\n💵 *العربون:* ${fmt(deposit)} جنيه (${selPayMethod||'—'})\n⏳ *الباقي:* ${fmt(remaining)} جنيه\n━━━━━━━━━━━━━━━━\n⚠️ السعر غير شامل مكان التصوير`;
 
     $('waAdminLink').href=`https://wa.me/201008194341?text=${encodeURIComponent(msg)}`;
     $('successMsg').textContent=`مبروك ${groom} و${bride}! 🎊 تم تسجيل حجزكم بنجاح. برجاء قراءة التعليمات أدناه قبل يوم التصوير.`;
     $('successScreen').classList.add('show');
+    buildCopy({groom,bride,phone1,phone2,type:selType,date:date?dateStr:'',time,session,hall,list:list.map(p=>({name:pkgLabel(p),price:p.price})),total,deposit,method:selPayMethod||'غير محدد',remaining,today:new Date().toLocaleDateString('ar-EG',{timeZone:'Africa/Cairo',year:'numeric',month:'long',day:'numeric'}),iso:new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo'}).format(new Date())});
   } catch(e){
     $('loading').classList.remove('show');
     showToast('⚠️ حدث خطأ، حاول تاني');
@@ -513,7 +538,97 @@ window.resetForm=function(){
   $('barTotal').style.display='none';
   ['f_groom','f_bride','f_phone1','f_phone2','f_session','f_hall','f_time','f_date','f_deposit'].forEach(id=>$(id).value='');
   $('successScreen').classList.remove('show');
+  $('f_hh').value='';$('f_mm').value='';$('copyImg').style.display='none';
   steps(1); window.scrollTo({top:0,behavior:'smooth'});
+};
+
+// ---- وقت البداية بنظام 24 ساعة (قيمة HH:MM في الحقل المخفي f_time، فمفيش تغيير في باقي النظام) ----
+(function(){
+  const pad=n=>String(n).padStart(2,'0');
+  const hh=document.getElementById('f_hh'),mm=document.getElementById('f_mm');
+  for(let h=0;h<24;h++)hh.insertAdjacentHTML('beforeend',`<option value="${pad(h)}">${pad(h)}</option>`);
+  for(let m=0;m<60;m+=5)mm.insertAdjacentHTML('beforeend',`<option value="${pad(m)}">${pad(m)}</option>`);
+})();
+window.syncTime=function(){
+  const h=document.getElementById('f_hh'),m=document.getElementById('f_mm');
+  if(h.value&&!m.value)m.value='00';
+  document.getElementById('f_time').value=h.value?`${h.value}:${m.value}`:'';
+};
+
+// ---- نسخة الحجز كصورة (Canvas) بمقاس شاشات الموبايل 1080×2340 ----
+let copyFile=null,copyURL=null;
+const isIOS=()=>/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+async function renderCopyImage(d){
+  const F='Cairo,"Segoe UI",Tahoma,Arial,sans-serif',W=1080,P=60,IN=W-P-34,IW=W-2*P-68;
+  try{await Promise.all([document.fonts.load('400 30px Cairo'),document.fonts.load('700 30px Cairo'),document.fonts.load('800 30px Cairo'),document.fonts.load('600 40px "Cormorant Garamond"')]);}catch(e){}
+  const rows=[['العريس',d.groom],['العروسة',d.bride],['رقم العريس',d.phone1],['رقم اتصال آخر',d.phone2],['نوع التصوير',d.type],['التاريخ',d.date],['وقت البداية',d.time],['مكان السيشن',d.session],['مكان القاعة',d.hall]].filter(r=>r[1]);
+  rows.push(['الباقات المختارة',d.list.map(p=>`• ${p.name} — ${fmt(p.price)} ج`)]);
+  const pay=[['الإجمالي النهائي',fmt(d.total)+' جنيه',1],['العربون المدفوع',fmt(d.deposit)+' جنيه'],['طريقة الدفع',d.method],['المبلغ الباقي',fmt(d.remaining)+' جنيه',1]];
+  const wrap=(x,t,w)=>{const out=[];let line='';for(const wd of String(t).split(/\s+/)){const tr=line?line+' '+wd:wd;if(x.measureText(tr).width>w&&line){out.push(line);line=wd;}else line=tr;}if(line)out.push(line);return out;};
+  const rr=(x,a,b,w,h,r,f)=>{x.beginPath();x.roundRect?x.roundRect(a,b,w,h,r):x.rect(a,b,w,h);x.fillStyle=f;x.fill();};
+  let cardTop=540,cardEnd=0,payEnd=0,H=2340;
+  const run=(x,draw)=>{
+    x.direction='rtl';x.textBaseline='alphabetic';
+    let y=cardTop+34;
+    for(const [lab,val] of rows){
+      x.textAlign='right';x.font=`600 28px ${F}`;if(draw){x.fillStyle='#8a8374';x.fillText(lab,IN,y+30);}
+      x.font=`700 36px ${F}`;y+=26;
+      const lines=Array.isArray(val)?val.flatMap(v=>wrap(x,v,IW)):wrap(x,val,IW);
+      for(const ln of lines){y+=48;if(draw){x.fillStyle='#17140f';x.fillText(ln,IN,y);}}
+      y+=18;if(draw){x.fillStyle='#ece7da';x.fillRect(P+34,y,W-2*P-68,2);}y+=22;
+    }
+    cardEnd=y-10;
+    y=cardEnd+60;const top=y;
+    y+=36;
+    for(const [lab,val,hot] of pay){
+      y+=54;
+      if(draw){x.textAlign='right';x.font=`600 30px ${F}`;x.fillStyle='rgba(255,255,255,.65)';x.fillText(lab,IN,y);
+        x.textAlign='left';x.font=`800 ${hot?40:34}px ${F}`;x.fillStyle=hot?'#D9BC78':'#fff';x.fillText(val,P+34,y);}
+      y+=26;
+    }
+    payEnd=y+20;return {top};
+  };
+  const probe=document.createElement('canvas').getContext('2d');run(probe,false);
+  H=Math.max(2340,payEnd+250);
+  const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  x.fillStyle='#f6f4ef';x.fillRect(0,0,W,H);
+  x.fillStyle='#0c0c0c';x.fillRect(0,0,W,330);x.fillStyle='#B8963E';x.fillRect(0,330,W,6);
+  x.strokeStyle='#B8963E';x.lineWidth=3;x.beginPath();x.arc(W/2,104,52,0,Math.PI*2);x.stroke();
+  x.textAlign='center';x.direction='ltr';x.fillStyle='#D9BC78';x.font='600 40px "Cormorant Garamond",Georgia,serif';x.fillText('IS',W/2,118);
+  x.fillStyle='#fff';x.font='600 52px "Cormorant Garamond",Georgia,serif';x.fillText('Islam Saeid Photography',W/2,236);
+  x.fillStyle='rgba(255,255,255,.55)';x.font='400 26px "Cormorant Garamond",Georgia,serif';x.fillText('Capturing Timeless Moments',W/2,284);
+  x.direction='rtl';x.fillStyle='#17140f';x.font=`800 54px ${F}`;x.fillText('نسخة من طلب الحجز',W/2,420);
+  x.fillStyle='#675f52';x.font=`600 28px ${F}`;x.fillText('تاريخ الطلب: '+d.today+'  •  الحالة: قيد المراجعة',W/2,474);
+  rr(x,P,cardTop,W-2*P,cardEnd-cardTop,28,'#ffffff');
+  rr(x,P,cardEnd+60,W-2*P,payEnd-(cardEnd+60),28,'#0c0c0c');
+  run(x,true);
+  x.textAlign='center';x.fillStyle='#675f52';x.font=`600 28px ${F}`;
+  x.fillText('الأسعار غير شاملة مكان التصوير',W/2,payEnd+80);
+  x.fillText('طلبك قيد المراجعة، وهنتواصل معاك لتأكيد الموعد',W/2,payEnd+128);
+  x.fillStyle='#B8963E';x.fillRect(W/2-60,payEnd+170,120,3);
+  return new Promise(res=>c.toBlob(res,'image/png'));
+}
+async function buildCopy(d){
+  const btn=document.getElementById('copyBtn'),img=document.getElementById('copyImg'),hint=document.getElementById('copyHint');
+  btn.disabled=true;btn.textContent='جاري تجهيز الصورة…';hint.textContent='';
+  try{
+    const blob=await renderCopyImage(d);
+    if(copyURL)URL.revokeObjectURL(copyURL);
+    copyURL=URL.createObjectURL(blob);
+    copyFile=new File([blob],'ISP-booking-'+d.iso+'.png',{type:'image/png'});
+    img.src=copyURL;img.style.display='block';
+    btn.disabled=false;btn.textContent='📥 احتفظ بنسختك من الحجز';
+  }catch(e){console.error(e);btn.textContent='تعذر تجهيز الصورة';}
+}
+window.saveCopy=async function(){
+  const hint=document.getElementById('copyHint');
+  if(!copyFile)return;
+  if(isIOS()&&navigator.canShare&&navigator.canShare({files:[copyFile]})){
+    try{await navigator.share({files:[copyFile],title:'نسخة من الحجز'});hint.textContent='من قايمة المشاركة اختار «حفظ الصورة» (Save Image) عشان تنزل في معرض الصور.';return;}
+    catch(e){if(e&&e.name==='AbortError')return;}
+  }
+  const a=document.createElement('a');a.href=copyURL;a.download=copyFile.name;document.body.appendChild(a);a.click();a.remove();
+  hint.textContent='اتحفظت الصورة على جهازك. ولو ما ظهرتش في المعرض، اضغط مطولًا على الصورة واختار «حفظ الصورة».';
 };
 </script>
 

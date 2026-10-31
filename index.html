@@ -186,6 +186,57 @@ button,input,select{font-family:inherit}
 .cat-det li .li-ico{position:absolute;right:0;top:6px;width:24px;height:24px;color:var(--gold)}
 .cat-det li .li-ico svg{width:100%;height:100%}
 .btn-book svg{width:22px;height:22px}
+
+.rv-teaser{margin-top:26px}
+.rv-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:12px;padding:0 2px}
+.rv-head h3{font-size:22px;font-weight:800;line-height:1.3}
+.rv-head p{font-size:13px;color:var(--text2)}
+.rv-score{display:flex;flex-direction:column;align-items:center;background:var(--ink);border:1px solid var(--gold);border-radius:14px;padding:8px 16px;cursor:pointer;flex:0 0 auto}
+.rv-score b{font-family:'Cormorant Garamond',serif;font-size:34px;line-height:1;color:var(--gold2)}
+.rv-score .rv-stars{font-size:12px}
+.rv-score small{font-size:11px;color:rgba(255,255,255,.6)}
+.rv-stars{color:var(--gold);letter-spacing:2px;direction:ltr;display:inline-block}
+.rv-stars .off{color:#d8d2c3}
+.rv-track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 14px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.rv-track::-webkit-scrollbar{display:none}
+.rv-mini{flex:0 0 84%;scroll-snap-align:center;position:relative;background:var(--ink);color:#fff;border:1px solid rgba(217,188,120,.45);border-radius:var(--radius);padding:26px 20px 18px;cursor:pointer;display:flex;flex-direction:column;gap:10px}
+.rv-mini .rv-q{position:absolute;top:2px;right:16px}
+.rv-q{font-family:'Cormorant Garamond',serif;font-size:72px;line-height:1;color:var(--gold);opacity:.9;height:40px;pointer-events:none}
+.rv-mini .rv-txt{font-size:15.5px;font-weight:600;line-height:2;color:#f4efe2;display:-webkit-box;-webkit-line-clamp:7;-webkit-box-orient:vertical;overflow:hidden;margin-top:26px;white-space:pre-line}
+.rv-more{font-size:12px;color:var(--gold2);font-weight:700}
+.rv-btns{display:flex;gap:10px;margin-top:2px}
+.rv-btn{flex:1;border-radius:99px;padding:13px 10px;font-size:15px;font-weight:800;cursor:pointer;min-height:48px}
+.rv-btn.line{background:var(--surface);color:var(--text);border:1.5px solid var(--gold)}
+.rv-btn.gold{background:linear-gradient(135deg,#B8963E,#D9BC78);color:#0c0c0c;border:none;box-shadow:0 4px 14px rgba(184,150,62,.35)}
+.rv-full{display:flex;flex-direction:column;gap:14px;margin-top:6px}
+.rv-item{position:relative;background:var(--surface);border:1px solid var(--border);border-right:4px solid var(--gold);border-radius:var(--radius);box-shadow:var(--shadow);padding:30px 20px 18px}
+.rv-item .rv-q{position:absolute;top:6px;right:16px}
+.rv-item .rv-txt{font-size:17px;font-weight:600;line-height:2.1;color:#17140f;white-space:pre-line;margin-top:6px;text-align:start}
+.rv-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;padding-top:10px;border-top:1px dashed var(--border)}
+.rv-tag{font-size:12px;font-weight:700;color:#6f5a22;background:var(--gold3);border:1px solid rgba(184,150,62,.35);border-radius:99px;padding:2px 12px}
+.rv-top{display:flex;align-items:center;gap:12px;margin:4px 0 14px}
+.rv-bigscore{display:flex;align-items:center;gap:14px;background:var(--ink);border:1px solid var(--gold);border-radius:var(--radius);padding:14px 18px;margin-bottom:14px;color:#fff}
+.rv-bigscore b{font-family:'Cormorant Garamond',serif;font-size:50px;line-height:1;color:var(--gold2)}
+.rv-bigscore div{font-size:13px;color:rgba(255,255,255,.7);line-height:1.8}
+.rv-bigscore .rv-stars{font-size:18px}
+.rv-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:150;align-items:flex-end;justify-content:center}
+.rv-modal.show{display:flex}
+.rv-sheet{background:var(--surface);width:100%;max-width:640px;border-radius:22px 22px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px));max-height:92dvh;overflow-y:auto}
+.rv-sheet h3{font-size:20px;font-weight:800;text-align:center}
+.rv-sheet .sub{font-size:13px;color:var(--text2);text-align:center;margin:2px 0 14px}
+.rv-pick{display:flex;justify-content:center;gap:6px;direction:ltr;margin-bottom:14px}
+.rv-pick button{background:none;border:none;font-size:40px;line-height:1;color:#d8d2c3;cursor:pointer;padding:2px 4px}
+.rv-pick button.on{color:var(--gold)}
+.rv-area{width:100%;min-height:130px;resize:vertical;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 14px;font-family:inherit;font-size:16px;line-height:1.9;color:var(--text)}
+.rv-area:focus{border-color:var(--gold);background:#fff;outline:none}
+.rv-cnt{font-size:12px;color:var(--text3);text-align:left;margin:4px 2px 10px;direction:ltr}
+.rv-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.rv-chip{border:1.5px solid var(--border);background:var(--surface);color:var(--text2);border-radius:99px;padding:7px 16px;font-size:14px;font-weight:700;cursor:pointer}
+.rv-chip.on{border-color:var(--gold);background:var(--gold3);color:#6f5a22}
+.rv-hp{position:absolute;left:-9999px;opacity:0;height:0;width:0}
+.rv-thanks{text-align:center;padding:18px 6px 6px}
+.rv-thanks .success-icon{margin-bottom:14px}
+.rv-thanks p{font-size:15px;color:var(--text2);line-height:1.9;margin-bottom:16px}
 </style>
 </head>
 <body>
@@ -212,6 +263,13 @@ button,input,select{font-family:inherit}
     <div id="viewHome">
       <div class="cat-intro"><h2>اختر نوع التصوير</h2><p>اختر القسم المناسب لك لعرض الباقات وتفاصيلها</p></div>
       <div class="home-grid" id="homeGrid"><div class="cat-loading">جاري تحميل الأقسام…</div></div>
+      <section class="rv-teaser" id="rvTeaser" aria-label="آراء العملاء"></section>
+    </div>
+    <div id="viewReviews" style="display:none">
+      <div class="rv-top"><button type="button" class="btn-back-cat" onclick="showHome()">› رجوع</button><div class="cat-hero"><div class="ci"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg></div><div><h2>آراء عملائنا</h2><small>Client Reviews</small></div></div></div>
+      <div id="rvBig"></div>
+      <button type="button" class="rv-btn gold" style="width:100%;margin-bottom:14px" onclick="openRvForm()">✍️ اكتب رأيك</button>
+      <div class="rv-full" id="rvFull"></div>
     </div>
     <div id="viewCat" style="display:none">
       <div class="cat-top">
@@ -342,13 +400,36 @@ button,input,select{font-family:inherit}
   <button class="btn-back" onclick="resetForm()">حجز جديد</button>
 </div>
 
+<div class="rv-modal" id="rvModal" onclick="if(event.target===this)closeRvForm()">
+  <div class="rv-sheet" role="dialog" aria-modal="true" aria-labelledby="rvTitle">
+    <div id="rvFormBox">
+      <h3 id="rvTitle">شاركنا رأيك</h3>
+      <div class="sub">رأيك يهمنا ويساعد غيرك يختار. ما بنعرض أي اسم.</div>
+      <div class="rv-pick" id="rvPick" role="radiogroup" aria-label="التقييم"></div>
+      <textarea class="rv-area" id="rvText" maxlength="600" placeholder="اكتب رأيك في تجربة التصوير…" oninput="rvCount()"></textarea>
+      <div class="rv-cnt"><span id="rvCnt">0</span> / 600</div>
+      <div class="pay-label" style="color:var(--text2);margin-bottom:8px;font-size:13px;font-weight:700">نوع الجلسة (اختياري)</div>
+      <div class="rv-chips" id="rvChips"></div>
+      <input class="rv-hp" id="rvHp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <button type="button" class="btn-submit" id="rvSend" onclick="submitReview()">إرسال الرأي</button>
+      <button type="button" class="btn-back" style="width:100%;margin-top:8px" onclick="closeRvForm()">إلغاء</button>
+    </div>
+    <div class="rv-thanks" id="rvThanks" style="display:none">
+      <div class="success-icon">✓</div>
+      <h3>شكرًا لك! 💛</h3>
+      <p>وصل رأيك، وهيظهر في الصفحة بعد المراجعة.</p>
+      <button type="button" class="btn-submit" onclick="closeRvForm()">تمام</button>
+    </div>
+  </div>
+</div>
+
 <div class="loading" id="loading"><div class="spinner"></div></div>
 <div class="toast" id="toast"></div>
 
 <!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC4kXbfYZfZNglj_sHUTo7jKkHVQqBEHJI",
@@ -518,14 +599,81 @@ window.openCategory=function(t){
   window.scrollTo({top:0,behavior:'smooth'});
 };
 window.showHome=function(){
-  curCat=null; $('viewCat').style.display='none'; $('viewHome').style.display='block';
+  curCat=null; $('viewCat').style.display='none'; $('viewReviews').style.display='none'; $('viewHome').style.display='block';
   window.scrollTo({top:0,behavior:'smooth'});
 };
+
+// ================== آراء العملاء ==================
+// الآراء الأساسية (تظهر لحد ما تستوردها للأدمن). بدون أي اسم عميل.
+const REVIEWS_SEED = [{"id": "seed_01", "text": "أنا والله مش عارفة أقولك إيه ولا إيه، كلام الدنيا كله مش هيكفي أد إيه شغلك جامد، وبصراحة أحسن مما كنت أتوقع 🥹❤️\nأشطر فوتوجرافر بجد. عالمي يا إسلام، السيشن قمر قمر بمعنى الكلمة، مش متخيلة الجمال ده والله ❤️\nوأد إيه بالك كان طويل معانا وروحك كانت حلوة. إنت تستاهل كل الخير اللي في الدنيا، والله ربنا يكرمك ويوفقك يا رب.", "rating": 5, "type": "", "order": 1}, {"id": "seed_02", "text": "مصور فاهم بيعمل إيه وشاطر، والتصوير والإديت بتاعه عالمي جدًا، ومواعيده مظبوطة. تسلم إيدك ❤️❤️", "rating": 5, "type": "", "order": 2}, {"id": "seed_03", "text": "يا إسلام أنا عروسة 4/7، إيه الصور التحفة دي بجد! تسلم إيدك على التصوير الحلو ده، السيشن والألبوم حلوين أوي، والتابلوه والحفلة كل حاجة عظمة بجد. يا رب دايمًا بالتوفيق.\nوشكرًا إنك وثّقتلي أهم يوم في حياتي بالشكل الجميل ده، وبالتصوير الحلو اللي شوفته في كواليتي الصور. وفعلًا كنت قد ثقتي فيك في يومي وفرحتي، ربنا يوفقك يا رب في اللي جاي، إنت تستاهل كل خير.\nوشكرًا على تعبك معايا في اليوم بتاعي، أنا عارفة إني تعبتك عشان زهقت من التصوير وإنت صممت نكمل. إنت شخصية محترمة بجد وبالك طويل، ربنا يبارك لك 😍", "rating": 5, "type": "زفاف", "order": 3}, {"id": "seed_04", "text": "Islam is a fantastic and professional photographer, I recommend him for your events and occasions.", "rating": 5, "type": "", "order": 4}, {"id": "seed_05", "text": "والله العظيم وبدون أي مجاملة، أول مرة أتعامل مع شخص محترم وذوق ومتقن شغله ويحبه وفاهم هو بيعمل إيه.\nمش عاوز أقولكم يوم فرحي كان مكان السيشن فيه لا يقل عن ٥٠ عروسة، والله قولت جوايا اليوم باظ خلاص وكمية إحباط رهيبة. بس حقيقي لما يكون معاك شخص متمكن ويقدر ينقلك الإحساس ده، بيخليك قد إيه متطمن وواثق إن اليوم هيبقى تمام.\nمن الآخر على ضمانتي الشخصية، لو بتفكر في سيشن توكل على الله وخد الخطوة وإنت متطمن ❤️\nحقيقي شكرًا جدًا يا إسلام ومعاذ 🤩", "rating": 5, "type": "", "order": 5}, {"id": "seed_06", "text": "من غير كلام كتير، أحلى وأحسن فوتوجرافر في الدنيا، والصور طبعًا اللهم بارك. تسلم إيدك، وطبعًا للمرة المليون كفاية روحك الطويلة عليا 🤣❤️", "rating": 5, "type": "", "order": 6}, {"id": "seed_07", "text": "الصور حقيقي فوق العظمة بشويه 😍 احترام وزوق ودقة ومهنية في شغلك، وبجد بجد شخصية محترمة أوي ❤️\nوالأحلى من كل ده إن صبرك كبير على العرسان لما يتأخروا 😂 حقيقي عرفت تحتوي اليوم وتبسطنا ❤️ كل حاجة عظمة بجد.\nوشكرًا إنك وثّقتلي اليوم بالجمال والشياكة، وخليته ذكرى حلوة بالشكل الجميل وبالتصوير العظمة ده 😍 كنت اختياري وبجد كنت أحسن اختيار، وهفضل أرشحك لأي عروسة طبعًا 😍\nربنا يوفقك يا رب وتفضل التوب في مجالك، وربنا يوفقك في اللي جاي ومن نجاح لنجاح ❤️", "rating": 5, "type": "زفاف", "order": 7}, {"id": "seed_08", "text": "تسلم إيدك يا حبيبي، الشغل تحفة وشخصية مريحة في التعامل، وكلك ذوق. أحسن فوتوغرافر، ربنا يباركلك ويوسع رزقك يا صاحبي 😍❤️", "rating": 5, "type": "", "order": 8}, {"id": "seed_09", "text": "بشكرك أوي يا سوولي على تعبك معايا وتعاملك وجدعنتك وشغلك. اللي مكنتش أتصور إنه يطلع بالشكل الحلو ده أوي، ولمستك في أي صورة عملتها ملهاش زي ❤️", "rating": 5, "type": "", "order": 9}, {"id": "seed_10", "text": "حقيقي نقول كلمة حق في حق العظمة ده، ده مش مجرد مصور عادي. والله ده مهندس عارف بيعمل إيه كويس أوي، وأنا جربت وشوفت ده بنفسي.\nحبيت أقولك شكرًا جدًا على تعبك معانا، ومن نجاح لنجاح دايمًا يا رب بالتوفيق 💙", "rating": 5, "type": "", "order": 10}, {"id": "seed_11", "text": "بقولك إيه، السيشن جامد جدًا! الله ينور عليك، والله يا عم سولم كلنا مبسوطين منك أوي ❤️😂\nومن غير أي حاجة، أنا كنت قولتلك من البداية إني واثق إن الشغل هيطلع ميه ميه ❤️", "rating": 5, "type": "", "order": 11}, {"id": "seed_12", "text": "راجل محترم جدًا جدًا، ملتزم بمواعيده، وبجد والله كانت أحلى فرصة إني اتعاملت معاه. وشغله اللهم بارك، الحقيقة 😍😍\nوعايز أقولك الصحة خسرت راجل 😂😂", "rating": 5, "type": "", "order": 12}, {"id": "seed_13", "text": "كنت حابب أشكرك على ذوقك وإخلاصك في شغلك، وعلى حسن تعاملك مع كل المعازيم، وعلى روحك الطيبة.\nيشهد ربنا إن اليوم كان حلو معاك، وبجد إنت ليك بصمة. يكفي إن الصور كلها عاجبة كل الناس، وأي حد له صورة مبهور بيها وبجمالها. بجد تسلم يا حبيبي، وإن شاء الله ميكونش آخر تعامل، وربنا يكتر الأفراح يا حبيبي.", "rating": 5, "type": "", "order": 13}, {"id": "seed_14", "text": "السيشن جميلة أوي أوي، شغل عالي ومحترم بجد. كانت تجربة جميلة وموفقة الحمد لله.", "rating": 5, "type": "", "order": 14}, {"id": "seed_15", "text": "بصراحة إسلام شخص بروفيشنال جدًا وذوق في المعاملة، متمكن من شغله وعارف كويس إزاي يطلع نتيجة حلوة.\nبجد تسلم إيدك على الشغل العالي ده، وذوقك في التعامل إنت والناس اللي معاك وتفهمك للعرسان. يعني بجد مش أي حد يسمع منك إنت حابب تتصور تاني أو صور بوضعيات غير اللي مجهزها، فعلًا بروفيشنال.\nالله ينور، والله كان يوم جميل وزاد جمال بوجودك وتوثيقك ليه 🥰🤍", "rating": 5, "type": "", "order": 15}, {"id": "seed_16", "text": "بس بعدين عن أي حاجة، تسلم إيدك، أقسم بالله شويه صور إنما إيه عسل! مكنتش متوقعة الصور تطلع بالحلاوة دي، لأني شوفت كذا عروسة في فرحها الصور مش حلوة، بس إنت مطلعنا حتى التغفيلات جامدة 😂❤️ خطيرة أوي.\nكفاية إنك كنت مسهل علينا اليوم وبتضحك وبتهزر معانا، وهو أصلًا بيكون يوم الواحد متوتر فيه. شكرًا بجد على العظمة اللي إنت عاملها دي، وإن شاء الله نتصور في سيشن جنس البيبي والسبوع وعيد الجواز وكله، أنا خلاص اعتمدتك 😂🤍", "rating": 5, "type": "زفاف", "order": 16}, {"id": "seed_17", "text": "تسلم إيدك. بجد تسلم إيدك، الصور جميلة جدًا. إن شاء الله تبقى مصور العيلة.", "rating": 5, "type": "", "order": 17}, {"id": "seed_18", "text": "تجربة التصوير في فرحي كانت من الحاجات اللي فرقت جدًا معايا ❤️\nإسلام سعيد قدّم شغل احترافي بكل معنى الكلمة، واهتمام واضح بكل التفاصيل الصغيرة قبل الكبيرة 👌\nوالأهم من ده كله إن تعامله في منتهى الاحترام والذوق، وأسلوبه راقي جدًا وبيخلي التعامل مريح وسلس 🙏\nالصور فعلًا طلعت فوق توقعاتي بكتير 👏 شكرًا على الذكريات الحلوة دي ❤️", "rating": 5, "type": "زفاف", "order": 18}, {"id": "seed_19", "text": "تسلم إيدك بجد، الصور تحفة ما شاء الله، وإنت شخص محترم ومريح جدًا في التعامل 🤍🤍", "rating": 4, "type": "", "order": 19}, {"id": "seed_20", "text": "والله يا إسلام بجد مش عارفة أقولك إيه على حلاوة الصور والسيشن والفيديوهات وكل حاجة، حقيقي بهرتني وشرفتني. ما شاء الله عامل شغل تحفة تحفة في الفرح.\nتسلم إيدك، تعامل وذوق وشغل ولا غلطة. ربنا يوفقك ويوسعها عليك، وده تالت مرة معانا، وإن شاء الله في كل أفراحنا تكون موجود معانا. متشكرة جدًا جدًا بجد 😍😍", "rating": 5, "type": "زفاف", "order": 20}, {"id": "seed_21", "text": "بجد الصور كانت جميلة وتحفة، سواء سيشن أو قاعة. تسلم إيدك يا إسلام، مصور عالمي.", "rating": 5, "type": "", "order": 21}, {"id": "seed_22", "text": "تسلم إيدك والله يا حبيب قلبي على الصور، أحسن مصور والله، ومخيبتش ظني فيك. وكان عندي ثقة من الأول إنك هتطلعلي شغل جبار زي كده، وإن شاء الله مش هيكون آخر تعامل بينا يا حبيبي يا إسلام. ربنا يفتحها عليك من وسعه يا رب ❤️❤️❤️", "rating": 5, "type": "", "order": 22}, {"id": "seed_23", "text": "تسلم إيدك والله. أنا كنت واثق فيك من البداية إنك هتطلع الصور الاحترافية دي، ربنا يباركلك يا رب ❤️", "rating": 5, "type": "", "order": 23}, {"id": "seed_24", "text": "بجد الصور جميلة أوي، مكنتش متخيلة إنها هتبقى حلوة بالشكل ده. تسلم إيدك بجد، وإنك بتبقى مهتم باليوم أوي وعندك أفكار حلوة ودايمًا مختلفة. تسلم إيدك بجد على الصور الجميلة دي ❤️\nوالريلز تحفة بجد، جميلة أوي ❤️", "rating": 5, "type": "", "order": 24}, {"id": "seed_25", "text": "أحلى إسلام وأحلى سيشن في الكوكب بجد، تسلم إيدك فنان 😍😍\nإن شاء الله إنت هتصورني في الجوازة التانية 😂😂", "rating": 5, "type": "", "order": 25}, {"id": "seed_26", "text": "والله بجد يعني اليوم كان تحفة معاك، كفاية ذوقك في التعامل وإنك مريح نفسيًا كده. دي كانت أهم حاجة، والسيشن كله تحفة بصراحة، ومندمتش الحمد لله على الاختيار.\nوبجد والله كنت مبسوطة أوي بالصور، تسلم إيدك ❤️", "rating": 5, "type": "", "order": 26}, {"id": "seed_27", "text": "يعني الواحد مش عارف يقول إيه بجد، تسلم إيدك الشغل حلو أوي أوي. تسلملي يا حبيبي، وعقبال أولادك يا رب ❤️❤️", "rating": 5, "type": "", "order": 27}, {"id": "seed_28", "text": "بجد السيشن تحفة تحفة، عقبال الفرح ويكون أحلى. أنا متأكدة من ده، وبصراحة مكنتش متخيلة إن الصور هتطلع حلوة كده. وبجد التعامل معاك والله مريح جدًا، بجد تاني تسلم إيدك إنت ومعاذ ☺️", "rating": 5, "type": "", "order": 28}, {"id": "seed_29", "text": "إسلام بجد تسلم إيدك على الصور، ما شاء الله تحفة وبشهادة الكل. والله ربنا يحسن بين يديك، عقبال الفرح بإذن الله 💖", "rating": 5, "type": "", "order": 29}, {"id": "seed_30", "text": "تسلم إيدك والله، الصور حلوة جدًا، مكنتش متوقع إنها هتبقى كده. والله الصور دي زي ما إنت عارف هي اللي بنطلع بيها من الفرح، ذكرى، وإنت عملت أحسن ذكرى في حياتي. عملتلي عظمة بجد.", "rating": 5, "type": "زفاف", "order": 30}, {"id": "seed_31", "text": "بجد من أريح وأذوق الناس في التعامل 🤍 السيشن كانت جميلة جدًا والصور طلعت تحفة. ربنا يوفقك دايمًا ويباركلك في شغلك 📸❤️", "rating": 5, "type": "", "order": 31}, {"id": "seed_32", "text": "تسلم إيدك يا إسلام، الصورة جميلة جدًا.. حاجة ما شاء الله تبارك الله عليك. معاملتك راقية جدًا جدًا.. كل ذوق، تسلم إيدك كمان مرة...\nبجد بجد تصويرك رائع. بالتوفيق دايمًا ❤️🌹", "rating": 5, "type": "", "order": 32}];
+let REVIEWS = REVIEWS_SEED.slice();
+function sortReviews(a){
+  const t=r=>r.createdAt&&r.createdAt.toMillis?r.createdAt.toMillis():0;
+  const fresh=a.filter(r=>r.order==null).sort((x,y)=>t(y)-t(x));
+  const seeded=a.filter(r=>r.order!=null).sort((x,y)=>x.order-y.order);
+  return fresh.concat(seeded);
+}
+onSnapshot(query(collection(db,'reviews'),where('status','==','approved')),snap=>{
+  const arr=[]; snap.forEach(d=>arr.push({id:d.id,...d.data()}));
+  REVIEWS=arr.length?sortReviews(arr):REVIEWS_SEED.slice();
+  renderReviews();
+},err=>{console.error('reviews load failed',err);REVIEWS=REVIEWS_SEED.slice();renderReviews();});
+
+function starsHTML(n){n=Math.max(0,Math.min(5,Math.round(n)));return `<span class="rv-stars" role="img" aria-label="${n} من 5">${'★'.repeat(n)}<span class="off">${'★'.repeat(5-n)}</span></span>`;}
+function rvStats(){const n=REVIEWS.length;const avg=n?REVIEWS.reduce((s,r)=>s+(Number(r.rating)||5),0)/n:0;return {n,avg};}
+function renderReviews(){
+  const {n,avg}=rvStats();
+  const tz=$('rvTeaser'); if(!tz)return;
+  if(!n){tz.innerHTML='';$('rvFull').innerHTML='';$('rvBig').innerHTML='';return;}
+  const avgT=avg.toFixed(1);
+  tz.innerHTML=`<div class="rv-head"><div><h3>آراء عملائنا</h3><p>من عملاء اتصوروا معانا على مدار السنين</p></div>
+    <div class="rv-score" onclick="openReviews()" role="button" tabindex="0"><b>${avgT}</b>${starsHTML(avg)}<small>${fmt(n)} رأي</small></div></div>
+    <div class="rv-track">${REVIEWS.slice(0,8).map(r=>`<div class="rv-mini" onclick="openReviews()"><span class="rv-q">“</span>${starsHTML(r.rating||5)}<div class="rv-txt" dir="auto">${esc(r.text)}</div><span class="rv-more">اقرأ الرأي كامل ‹</span></div>`).join('')}</div>
+    <div class="rv-btns"><button type="button" class="rv-btn line" onclick="openReviews()">عرض كل الآراء</button><button type="button" class="rv-btn gold" onclick="openRvForm()">✍️ اكتب رأيك</button></div>`;
+  $('rvBig').innerHTML=`<div class="rv-bigscore"><b>${avgT}</b><div>${starsHTML(avg)}<br>بناءً على ${fmt(n)} رأي من عملاء حقيقيين</div></div>`;
+  $('rvFull').innerHTML=REVIEWS.map(r=>`<article class="rv-item"><span class="rv-q">“</span><div class="rv-txt" dir="auto">${esc(r.text)}</div>
+    <div class="rv-foot">${starsHTML(r.rating||5)}${r.type?`<span class="rv-tag">${esc(TYPE_TITLE[r.type]||r.type)}</span>`:''}</div></article>`).join('');
+}
+window.openReviews=function(){
+  ['viewHome','viewCat'].forEach(id=>$(id).style.display='none'); $('viewReviews').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+let rvRating=0, rvType='';
+function rvBuild(){
+  $('rvPick').innerHTML=[1,2,3,4,5].map(i=>`<button type="button" role="radio" aria-checked="${rvRating===i}" aria-label="${i} من 5" class="${i<=rvRating?'on':''}" onclick="setRvStar(${i})">★</button>`).join('');
+  $('rvChips').innerHTML=['زفاف','خطوبة','قاعة فقط'].map(t=>`<button type="button" class="rv-chip${rvType===t?' on':''}" data-t="${esc(t)}" onclick="setRvType(this.dataset.t)">${esc(TYPE_TITLE[t])}</button>`).join('');
+}
+window.setRvStar=i=>{rvRating=i;rvBuild();};
+window.setRvType=t=>{rvType=rvType===t?'':t;rvBuild();};
+window.rvCount=()=>{$('rvCnt').textContent=$('rvText').value.length;};
+window.openRvForm=function(){
+  rvRating=0;rvType='';$('rvText').value='';$('rvHp').value='';rvCount();rvBuild();
+  $('rvFormBox').style.display='block';$('rvThanks').style.display='none';
+  $('rvModal').classList.add('show');
+};
+window.closeRvForm=()=>$('rvModal').classList.remove('show');
+window.submitReview=async function(){
+  const text=$('rvText').value.trim();
+  if($('rvHp').value)return;
+  if(!rvRating){showToast('⚠️ اختر عدد النجوم');return;}
+  if(text.length<10){showToast('⚠️ اكتب رأيك في سطر أو أكتر');return;}
+  try{const last=+localStorage.getItem('isp_rv_last')||0;if(Date.now()-last<60000){showToast('⚠️ استنى دقيقة قبل إرسال رأي تاني');return;}}catch(e){}
+  const btn=$('rvSend');btn.disabled=true;btn.style.opacity='.6';
+  try{
+    await addDoc(collection(db,'reviews'),{text,rating:rvRating,type:rvType,status:'pending',createdAt:serverTimestamp()});
+    try{localStorage.setItem('isp_rv_last',String(Date.now()));}catch(e){}
+    $('rvFormBox').style.display='none';$('rvThanks').style.display='block';
+  }catch(e){console.error(e);showToast('⚠️ تعذر الإرسال، حاول تاني');}
+  btn.disabled=false;btn.style.opacity='1';
+};
+renderReviews();
+
 window.__refresh=function(){
   renderHome();
   if(curCat)renderCategory();
   if(selPkg){renderExtras();renderSummary();}
 };
+renderHome();
 
 window.bookPackage = async function(type,i){
   await packagesReady;
@@ -542,6 +690,7 @@ window.bookPackage = async function(type,i){
 };
 window.showCatalog = function(){
   selType=null; selPkg=null; extras=[];
+  $('viewReviews').style.display='none';
   if(curCat){renderCategory();$('viewHome').style.display='none';$('viewCat').style.display='block';}else{renderHome();$('viewHome').style.display='block';$('viewCat').style.display='none';}
   ['secChosen','secForm','extraSec','submitBar'].forEach(id=>$(id).style.display='none');
   $('extraBox').style.display='none'; $('extraToggle').setAttribute('aria-expanded','false');

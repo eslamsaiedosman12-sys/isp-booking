@@ -163,6 +163,18 @@ body{font-family:'Cairo',sans-serif;background:var(--surface2);color:var(--text)
 .wa-go{display:block;text-align:center;background:#25a244;color:#fff;border-radius:var(--radius-sm);padding:14px;font-weight:800;text-decoration:none;font-size:15px}
 .wa-err{background:#fdecea;color:#b3261e;border-radius:var(--radius-sm);padding:10px 12px;font-size:13px;display:none}
 .wa-note{font-size:12px;color:var(--text3)}
+
+.rv-a-meta{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
+.rv-a-txt{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:62vw}
+.rv-st{font-size:10px;font-weight:800;border-radius:99px;padding:2px 9px;flex:0 0 auto}
+.rv-st.pending{background:var(--amber-l);color:var(--amber)}
+.rv-st.approved{background:var(--green-l);color:var(--green)}
+.rv-st.hidden{background:#eee;color:#777}
+.rv-a-stars{color:var(--gold);letter-spacing:1px;font-size:12px;direction:ltr}
+.btn-ok-rv{flex:1;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);padding:10px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
+.btn-hide-rv{background:#eee;color:#555;border:none;border-radius:var(--radius-sm);padding:10px 14px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
+.rv-import{background:var(--blue-l);border:1px solid #b9d3ee;color:var(--blue);border-radius:var(--radius-sm);padding:12px 14px;font-size:12px;margin-bottom:14px;line-height:1.8}
+.rv-import button{margin-top:8px;width:100%;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);padding:10px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
 </style>
 </head>
 <body>
@@ -198,6 +210,7 @@ body{font-family:'Cairo',sans-serif;background:var(--surface2);color:var(--text)
   <button class="tab-btn" id="tabBtnReminders" onclick="switchTab('reminders')">⏰ تذكيرات <span class="tab-cnt" id="tabCnt" style="display:none">0</span></button>
   <button class="tab-btn" id="tabBtnArchive" onclick="switchTab('archive')">🗂 الأرشيف</button>
   <button class="tab-btn" id="tabBtnPackages" onclick="switchTab('packages')">📦 الباقات</button>
+  <button class="tab-btn" id="tabBtnReviews" onclick="switchTab('reviews')">⭐ الآراء <span class="tab-cnt" id="rvCnt" style="display:none">0</span></button>
 </div>
 
 <div class="tab-pane active" id="tab-bookings">
@@ -262,6 +275,16 @@ body{font-family:'Cairo',sans-serif;background:var(--surface2);color:var(--text)
     <div class="pkg-type-tabs" id="pkgTypeTabs"></div>
     <div id="pkgEditorList"></div>
     <button class="btn-add-pkg" onclick="addNewPackage()">＋ إضافة باقة جديدة</button>
+  </div>
+</div>
+
+<div class="tab-pane" id="tab-reviews">
+  <div class="pkg-mgr">
+    <div class="sync-banner">✅ الآراء الجديدة بتوصل هنا «بانتظار الموافقة» ومش بتظهر للعملاء إلا بعد ما تنشرها</div>
+    <div id="rvImportBox"></div>
+    <div class="pkg-type-tabs" id="rvFilterTabs"></div>
+    <div id="rvAdminList"></div>
+    <button class="btn-add-pkg" onclick="rvAddNew()">＋ إضافة رأي يدويًا</button>
   </div>
 </div>
 
@@ -385,8 +408,9 @@ window.switchTab=function(tab){
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
-  ({bookings:'tabBtnBookings',archive:'tabBtnArchive',packages:'tabBtnPackages'}[tab]&&(document.getElementById({bookings:'tabBtnBookings',archive:'tabBtnArchive',packages:'tabBtnPackages'}[tab]).classList.add('active')));
+  ({bookings:'tabBtnBookings',archive:'tabBtnArchive',packages:'tabBtnPackages',reviews:'tabBtnReviews'}[tab]&&(document.getElementById({bookings:'tabBtnBookings',archive:'tabBtnArchive',packages:'tabBtnPackages',reviews:'tabBtnReviews'}[tab]).classList.add('active')));
   if(tab==='packages')loadPackagesEditor();
+  if(tab==='reviews')renderReviewsAdmin();
 };
 
 /* ===== DETAIL + EDIT ===== */
@@ -647,7 +671,7 @@ window.deleteBooking=async function(id){
 };
 
 /* ===== PACKAGES ===== */
-const TYPES=['زفاف','خطوبة','كتب كتاب','قاعة فقط'];
+const TYPES=['زفاف','خطوبة','قاعة فقط'];
 const DEFAULT_PACKAGES={'زفاف':[{name:'باقة 1',price:3500,details:'تصوير سيشن بعدد صور مفتوح'},{name:'باقة 2',price:4500,details:'تصوير السيشن + تصوير القاعة'},{name:'باقة 3',price:6000,details:'تصوير السيشن + تصوير القاعة\nألبوم 30×45 + تابلوه 40×60'},{name:'باقة 4',price:8000,details:'تصوير السيشن + تصوير القاعة\nألبوم 30×80 + تابلوه 50×70'}],'خطوبة':[{name:'باقة 1',price:3000,details:'تصوير سيشن بعدد صور مفتوح'},{name:'باقة 2',price:4000,details:'تصوير السيشن + تصوير القاعة'},{name:'باقة 3',price:5500,details:'تصوير السيشن + تصوير القاعة\nألبوم 30×45 + تابلوه 40×60'}],'كتب كتاب':[{name:'باقة 1',price:3000,details:'تصوير سيشن بعدد صور مفتوح'},{name:'باقة 2',price:4000,details:'تصوير السيشن + تصوير القاعة'},{name:'باقة 3',price:5500,details:'تصوير السيشن + تصوير القاعة\nألبوم 30×45 + تابلوه 40×60'}],'قاعة فقط':[{name:'باقة 1',price:800,details:'تصوير قاعة لمدة ساعتين'},{name:'باقة 2',price:1000,details:'تصوير قاعة لمدة 3 ساعات'}]};
 let activeType='زفاف',packagesData={},packagesLoaded=false;
 
@@ -729,6 +753,88 @@ window.addNewPackage=function(){
   setTimeout(()=>{const b=document.getElementById('pkb_'+idx);if(b){b.classList.add('open');b.scrollIntoView({behavior:'smooth',block:'center'});}},80);
 };
 
+
+/* ===== REVIEWS (آراء العملاء) ===== */
+const REVIEWS_SEED=[{"id": "seed_01", "text": "أنا والله مش عارفة أقولك إيه ولا إيه، كلام الدنيا كله مش هيكفي أد إيه شغلك جامد، وبصراحة أحسن مما كنت أتوقع 🥹❤️\nأشطر فوتوجرافر بجد. عالمي يا إسلام، السيشن قمر قمر بمعنى الكلمة، مش متخيلة الجمال ده والله ❤️\nوأد إيه بالك كان طويل معانا وروحك كانت حلوة. إنت تستاهل كل الخير اللي في الدنيا، والله ربنا يكرمك ويوفقك يا رب.", "rating": 5, "type": "", "order": 1}, {"id": "seed_02", "text": "مصور فاهم بيعمل إيه وشاطر، والتصوير والإديت بتاعه عالمي جدًا، ومواعيده مظبوطة. تسلم إيدك ❤️❤️", "rating": 5, "type": "", "order": 2}, {"id": "seed_03", "text": "يا إسلام أنا عروسة 4/7، إيه الصور التحفة دي بجد! تسلم إيدك على التصوير الحلو ده، السيشن والألبوم حلوين أوي، والتابلوه والحفلة كل حاجة عظمة بجد. يا رب دايمًا بالتوفيق.\nوشكرًا إنك وثّقتلي أهم يوم في حياتي بالشكل الجميل ده، وبالتصوير الحلو اللي شوفته في كواليتي الصور. وفعلًا كنت قد ثقتي فيك في يومي وفرحتي، ربنا يوفقك يا رب في اللي جاي، إنت تستاهل كل خير.\nوشكرًا على تعبك معايا في اليوم بتاعي، أنا عارفة إني تعبتك عشان زهقت من التصوير وإنت صممت نكمل. إنت شخصية محترمة بجد وبالك طويل، ربنا يبارك لك 😍", "rating": 5, "type": "زفاف", "order": 3}, {"id": "seed_04", "text": "Islam is a fantastic and professional photographer, I recommend him for your events and occasions.", "rating": 5, "type": "", "order": 4}, {"id": "seed_05", "text": "والله العظيم وبدون أي مجاملة، أول مرة أتعامل مع شخص محترم وذوق ومتقن شغله ويحبه وفاهم هو بيعمل إيه.\nمش عاوز أقولكم يوم فرحي كان مكان السيشن فيه لا يقل عن ٥٠ عروسة، والله قولت جوايا اليوم باظ خلاص وكمية إحباط رهيبة. بس حقيقي لما يكون معاك شخص متمكن ويقدر ينقلك الإحساس ده، بيخليك قد إيه متطمن وواثق إن اليوم هيبقى تمام.\nمن الآخر على ضمانتي الشخصية، لو بتفكر في سيشن توكل على الله وخد الخطوة وإنت متطمن ❤️\nحقيقي شكرًا جدًا يا إسلام ومعاذ 🤩", "rating": 5, "type": "", "order": 5}, {"id": "seed_06", "text": "من غير كلام كتير، أحلى وأحسن فوتوجرافر في الدنيا، والصور طبعًا اللهم بارك. تسلم إيدك، وطبعًا للمرة المليون كفاية روحك الطويلة عليا 🤣❤️", "rating": 5, "type": "", "order": 6}, {"id": "seed_07", "text": "الصور حقيقي فوق العظمة بشويه 😍 احترام وزوق ودقة ومهنية في شغلك، وبجد بجد شخصية محترمة أوي ❤️\nوالأحلى من كل ده إن صبرك كبير على العرسان لما يتأخروا 😂 حقيقي عرفت تحتوي اليوم وتبسطنا ❤️ كل حاجة عظمة بجد.\nوشكرًا إنك وثّقتلي اليوم بالجمال والشياكة، وخليته ذكرى حلوة بالشكل الجميل وبالتصوير العظمة ده 😍 كنت اختياري وبجد كنت أحسن اختيار، وهفضل أرشحك لأي عروسة طبعًا 😍\nربنا يوفقك يا رب وتفضل التوب في مجالك، وربنا يوفقك في اللي جاي ومن نجاح لنجاح ❤️", "rating": 5, "type": "زفاف", "order": 7}, {"id": "seed_08", "text": "تسلم إيدك يا حبيبي، الشغل تحفة وشخصية مريحة في التعامل، وكلك ذوق. أحسن فوتوغرافر، ربنا يباركلك ويوسع رزقك يا صاحبي 😍❤️", "rating": 5, "type": "", "order": 8}, {"id": "seed_09", "text": "بشكرك أوي يا سوولي على تعبك معايا وتعاملك وجدعنتك وشغلك. اللي مكنتش أتصور إنه يطلع بالشكل الحلو ده أوي، ولمستك في أي صورة عملتها ملهاش زي ❤️", "rating": 5, "type": "", "order": 9}, {"id": "seed_10", "text": "حقيقي نقول كلمة حق في حق العظمة ده، ده مش مجرد مصور عادي. والله ده مهندس عارف بيعمل إيه كويس أوي، وأنا جربت وشوفت ده بنفسي.\nحبيت أقولك شكرًا جدًا على تعبك معانا، ومن نجاح لنجاح دايمًا يا رب بالتوفيق 💙", "rating": 5, "type": "", "order": 10}, {"id": "seed_11", "text": "بقولك إيه، السيشن جامد جدًا! الله ينور عليك، والله يا عم سولم كلنا مبسوطين منك أوي ❤️😂\nومن غير أي حاجة، أنا كنت قولتلك من البداية إني واثق إن الشغل هيطلع ميه ميه ❤️", "rating": 5, "type": "", "order": 11}, {"id": "seed_12", "text": "راجل محترم جدًا جدًا، ملتزم بمواعيده، وبجد والله كانت أحلى فرصة إني اتعاملت معاه. وشغله اللهم بارك، الحقيقة 😍😍\nوعايز أقولك الصحة خسرت راجل 😂😂", "rating": 5, "type": "", "order": 12}, {"id": "seed_13", "text": "كنت حابب أشكرك على ذوقك وإخلاصك في شغلك، وعلى حسن تعاملك مع كل المعازيم، وعلى روحك الطيبة.\nيشهد ربنا إن اليوم كان حلو معاك، وبجد إنت ليك بصمة. يكفي إن الصور كلها عاجبة كل الناس، وأي حد له صورة مبهور بيها وبجمالها. بجد تسلم يا حبيبي، وإن شاء الله ميكونش آخر تعامل، وربنا يكتر الأفراح يا حبيبي.", "rating": 5, "type": "", "order": 13}, {"id": "seed_14", "text": "السيشن جميلة أوي أوي، شغل عالي ومحترم بجد. كانت تجربة جميلة وموفقة الحمد لله.", "rating": 5, "type": "", "order": 14}, {"id": "seed_15", "text": "بصراحة إسلام شخص بروفيشنال جدًا وذوق في المعاملة، متمكن من شغله وعارف كويس إزاي يطلع نتيجة حلوة.\nبجد تسلم إيدك على الشغل العالي ده، وذوقك في التعامل إنت والناس اللي معاك وتفهمك للعرسان. يعني بجد مش أي حد يسمع منك إنت حابب تتصور تاني أو صور بوضعيات غير اللي مجهزها، فعلًا بروفيشنال.\nالله ينور، والله كان يوم جميل وزاد جمال بوجودك وتوثيقك ليه 🥰🤍", "rating": 5, "type": "", "order": 15}, {"id": "seed_16", "text": "بس بعدين عن أي حاجة، تسلم إيدك، أقسم بالله شويه صور إنما إيه عسل! مكنتش متوقعة الصور تطلع بالحلاوة دي، لأني شوفت كذا عروسة في فرحها الصور مش حلوة، بس إنت مطلعنا حتى التغفيلات جامدة 😂❤️ خطيرة أوي.\nكفاية إنك كنت مسهل علينا اليوم وبتضحك وبتهزر معانا، وهو أصلًا بيكون يوم الواحد متوتر فيه. شكرًا بجد على العظمة اللي إنت عاملها دي، وإن شاء الله نتصور في سيشن جنس البيبي والسبوع وعيد الجواز وكله، أنا خلاص اعتمدتك 😂🤍", "rating": 5, "type": "زفاف", "order": 16}, {"id": "seed_17", "text": "تسلم إيدك. بجد تسلم إيدك، الصور جميلة جدًا. إن شاء الله تبقى مصور العيلة.", "rating": 5, "type": "", "order": 17}, {"id": "seed_18", "text": "تجربة التصوير في فرحي كانت من الحاجات اللي فرقت جدًا معايا ❤️\nإسلام سعيد قدّم شغل احترافي بكل معنى الكلمة، واهتمام واضح بكل التفاصيل الصغيرة قبل الكبيرة 👌\nوالأهم من ده كله إن تعامله في منتهى الاحترام والذوق، وأسلوبه راقي جدًا وبيخلي التعامل مريح وسلس 🙏\nالصور فعلًا طلعت فوق توقعاتي بكتير 👏 شكرًا على الذكريات الحلوة دي ❤️", "rating": 5, "type": "زفاف", "order": 18}, {"id": "seed_19", "text": "تسلم إيدك بجد، الصور تحفة ما شاء الله، وإنت شخص محترم ومريح جدًا في التعامل 🤍🤍", "rating": 4, "type": "", "order": 19}, {"id": "seed_20", "text": "والله يا إسلام بجد مش عارفة أقولك إيه على حلاوة الصور والسيشن والفيديوهات وكل حاجة، حقيقي بهرتني وشرفتني. ما شاء الله عامل شغل تحفة تحفة في الفرح.\nتسلم إيدك، تعامل وذوق وشغل ولا غلطة. ربنا يوفقك ويوسعها عليك، وده تالت مرة معانا، وإن شاء الله في كل أفراحنا تكون موجود معانا. متشكرة جدًا جدًا بجد 😍😍", "rating": 5, "type": "زفاف", "order": 20}, {"id": "seed_21", "text": "بجد الصور كانت جميلة وتحفة، سواء سيشن أو قاعة. تسلم إيدك يا إسلام، مصور عالمي.", "rating": 5, "type": "", "order": 21}, {"id": "seed_22", "text": "تسلم إيدك والله يا حبيب قلبي على الصور، أحسن مصور والله، ومخيبتش ظني فيك. وكان عندي ثقة من الأول إنك هتطلعلي شغل جبار زي كده، وإن شاء الله مش هيكون آخر تعامل بينا يا حبيبي يا إسلام. ربنا يفتحها عليك من وسعه يا رب ❤️❤️❤️", "rating": 5, "type": "", "order": 22}, {"id": "seed_23", "text": "تسلم إيدك والله. أنا كنت واثق فيك من البداية إنك هتطلع الصور الاحترافية دي، ربنا يباركلك يا رب ❤️", "rating": 5, "type": "", "order": 23}, {"id": "seed_24", "text": "بجد الصور جميلة أوي، مكنتش متخيلة إنها هتبقى حلوة بالشكل ده. تسلم إيدك بجد، وإنك بتبقى مهتم باليوم أوي وعندك أفكار حلوة ودايمًا مختلفة. تسلم إيدك بجد على الصور الجميلة دي ❤️\nوالريلز تحفة بجد، جميلة أوي ❤️", "rating": 5, "type": "", "order": 24}, {"id": "seed_25", "text": "أحلى إسلام وأحلى سيشن في الكوكب بجد، تسلم إيدك فنان 😍😍\nإن شاء الله إنت هتصورني في الجوازة التانية 😂😂", "rating": 5, "type": "", "order": 25}, {"id": "seed_26", "text": "والله بجد يعني اليوم كان تحفة معاك، كفاية ذوقك في التعامل وإنك مريح نفسيًا كده. دي كانت أهم حاجة، والسيشن كله تحفة بصراحة، ومندمتش الحمد لله على الاختيار.\nوبجد والله كنت مبسوطة أوي بالصور، تسلم إيدك ❤️", "rating": 5, "type": "", "order": 26}, {"id": "seed_27", "text": "يعني الواحد مش عارف يقول إيه بجد، تسلم إيدك الشغل حلو أوي أوي. تسلملي يا حبيبي، وعقبال أولادك يا رب ❤️❤️", "rating": 5, "type": "", "order": 27}, {"id": "seed_28", "text": "بجد السيشن تحفة تحفة، عقبال الفرح ويكون أحلى. أنا متأكدة من ده، وبصراحة مكنتش متخيلة إن الصور هتطلع حلوة كده. وبجد التعامل معاك والله مريح جدًا، بجد تاني تسلم إيدك إنت ومعاذ ☺️", "rating": 5, "type": "", "order": 28}, {"id": "seed_29", "text": "إسلام بجد تسلم إيدك على الصور، ما شاء الله تحفة وبشهادة الكل. والله ربنا يحسن بين يديك، عقبال الفرح بإذن الله 💖", "rating": 5, "type": "", "order": 29}, {"id": "seed_30", "text": "تسلم إيدك والله، الصور حلوة جدًا، مكنتش متوقع إنها هتبقى كده. والله الصور دي زي ما إنت عارف هي اللي بنطلع بيها من الفرح، ذكرى، وإنت عملت أحسن ذكرى في حياتي. عملتلي عظمة بجد.", "rating": 5, "type": "زفاف", "order": 30}, {"id": "seed_31", "text": "بجد من أريح وأذوق الناس في التعامل 🤍 السيشن كانت جميلة جدًا والصور طلعت تحفة. ربنا يوفقك دايمًا ويباركلك في شغلك 📸❤️", "rating": 5, "type": "", "order": 31}, {"id": "seed_32", "text": "تسلم إيدك يا إسلام، الصورة جميلة جدًا.. حاجة ما شاء الله تبارك الله عليك. معاملتك راقية جدًا جدًا.. كل ذوق، تسلم إيدك كمان مرة...\nبجد بجد تصويرك رائع. بالتوفيق دايمًا ❤️🌹", "rating": 5, "type": "", "order": 32}];
+let reviewsA=[],rvFilter='pending',rvOpen=null;
+const rvEsc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rvStat=r=>r.status==='approved'?'approved':r.status==='hidden'?'hidden':'pending';
+const rvStatLbl={pending:'بانتظار الموافقة',approved:'منشور',hidden:'مخفي'};
+const rvStars=n=>'★'.repeat(n)+'☆'.repeat(5-n);
+function renderReviewsAdmin(){
+  const list=document.getElementById('rvAdminList');if(!list)return;
+  const pend=reviewsA.filter(r=>rvStat(r)==='pending').length;
+  const c=document.getElementById('rvCnt');c.textContent=pend;c.style.display=pend?'inline':'none';
+  const seedNum=id=>+String(id).replace('seed_','')||0;
+  const maxHave=Math.max(0,...reviewsA.filter(r=>r.id.startsWith('seed_')).map(r=>seedNum(r.id)));
+  const missing=REVIEWS_SEED.filter(r=>seedNum(r.id)>maxHave);
+  document.getElementById('rvImportBox').innerHTML=missing.length?`<div class="rv-import">📥 ${maxHave?`فيه ${missing.length} رأي جديد جاهز للاستيراد (من الصور الجديدة). الآراء اللي عدّلتها قبل كده مش هتتغير.`:`لسه ما استوردتش الآراء الأساسية (${missing.length} رأي من الصور). لحد ما تستوردها هي اللي بتظهر في الصفحة، ولو استوردتها هتقدر تعدّل عليها وتخفيها وتمسحها.`}<button onclick="rvImportSeed()">${maxHave?'استيراد الآراء الجديدة':'استيراد الآراء الأساسية'}</button></div>`:'';
+  const cnt=k=>k==='all'?reviewsA.length:reviewsA.filter(r=>rvStat(r)===k).length;
+  document.getElementById('rvFilterTabs').innerHTML=[['pending','بانتظار الموافقة'],['approved','منشور'],['hidden','مخفي'],['all','الكل']].map(([k,l])=>`<button class="ptt-btn ${rvFilter===k?'active':''}" onclick="rvSetFilter('${k}')">${l} (${cnt(k)})</button>`).join('');
+  const t=x=>x.createdAt&&x.createdAt.toMillis?x.createdAt.toMillis():0;
+  const rows=reviewsA.filter(r=>rvFilter==='all'||rvStat(r)===rvFilter).sort((a,b)=>(a.order!=null&&b.order!=null)?a.order-b.order:(a.order!=null?1:b.order!=null?-1:t(b)-t(a)));
+  list.innerHTML=rows.length?rows.map(r=>{const st=rvStat(r),open=rvOpen===r.id;return `
+    <div class="pkg-item">
+      <div class="pkg-item-head" onclick="rvToggle('${r.id}')">
+        <div class="rv-a-meta"><span class="rv-st ${st}">${rvStatLbl[st]}</span><span class="rv-a-txt" dir="auto">${rvEsc(r.text)}</span></div>
+        <span class="rv-a-stars">${rvStars(r.rating||5)}</span>
+      </div>
+      <div class="pkg-item-body ${open?'open':''}">
+        <div><div class="pi-label">نص الرأي (تقدر تعدّله أو تشيل أي اسم)</div><textarea class="pi-input pi-textarea" style="min-height:130px" id="rt_${r.id}" dir="auto">${rvEsc(r.text)}</textarea></div>
+        <div style="display:flex;gap:10px"><div style="flex:1"><div class="pi-label">التقييم</div><select class="pi-input" id="rr_${r.id}">${[5,4,3,2,1].map(n=>`<option value="${n}" ${(r.rating||5)===n?'selected':''}>${rvStars(n)}</option>`).join('')}</select></div>
+        <div style="flex:1"><div class="pi-label">نوع الجلسة</div><select class="pi-input" id="ry_${r.id}">${[['','—'],['زفاف','زفاف'],['خطوبة','خطوبة'],['قاعة فقط','قاعة']].map(([v,l])=>`<option value="${v}" ${(r.type||'')===v?'selected':''}>${l}</option>`).join('')}</select></div></div>
+        <div class="pkg-actions">
+          ${st==='approved'?`<button class="btn-hide-rv" onclick="rvSave('${r.id}','hidden')">🙈 إخفاء</button>`:`<button class="btn-ok-rv" onclick="rvSave('${r.id}','approved')">✅ نشر للعملاء</button>`}
+          <button class="btn-save-pkg" onclick="rvSave('${r.id}')">💾 حفظ</button>
+          <button class="btn-del-pkg" onclick="rvDelete('${r.id}')">🗑</button>
+        </div>
+      </div>
+    </div>`;}).join(''):'<div class="empty"><div>⭐</div>لا توجد آراء هنا</div>';
+}
+window.rvSetFilter=k=>{rvFilter=k;renderReviewsAdmin();};
+window.rvToggle=id=>{rvOpen=rvOpen===id?null:id;renderReviewsAdmin();};
+window.rvSave=async function(id,status){
+  const text=document.getElementById('rt_'+id).value.trim();
+  if(text.length<3){showToast('⚠️ اكتب نص الرأي');return;}
+  const upd={text,rating:+document.getElementById('rr_'+id).value||5,type:document.getElementById('ry_'+id).value};
+  if(status)upd.status=status;
+  loading(true);
+  try{await db.collection('reviews').doc(id).update(upd);showToast(status==='approved'?'✅ تم النشر':status==='hidden'?'🙈 تم الإخفاء':'✅ تم الحفظ');}
+  catch(e){showToast('⚠️ خطأ: '+e.message);}
+  loading(false);
+};
+window.rvDelete=async function(id){
+  if(!confirm('حذف الرأي نهائيًا؟'))return;
+  loading(true);
+  try{await db.collection('reviews').doc(id).delete();rvOpen=null;showToast('🗑 تم الحذف');}
+  catch(e){showToast('⚠️ خطأ: '+e.message);}
+  loading(false);
+};
+window.rvAddNew=async function(){
+  const text=(prompt('اكتب نص الرأي (من غير اسم العميل):')||'').trim();
+  if(!text)return;
+  loading(true);
+  try{
+    const ref=await db.collection('reviews').add({text,rating:5,type:'',status:'approved',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    rvOpen=ref.id;rvFilter='approved';showToast('✅ تمت الإضافة ونُشرت');
+  }catch(e){showToast('⚠️ خطأ: '+e.message);}
+  loading(false);
+};
+window.rvImportSeed=async function(){
+  const num=id=>+String(id).replace('seed_','')||0;
+  const maxHave=Math.max(0,...reviewsA.filter(r=>r.id.startsWith('seed_')).map(r=>num(r.id)));
+  const todo=REVIEWS_SEED.filter(r=>num(r.id)>maxHave);
+  if(!todo.length)return;
+  if(!confirm('استيراد '+todo.length+' رأي ونشرهم؟'))return;
+  loading(true);
+  try{
+    const batch=db.batch();
+    todo.forEach(r=>batch.set(db.collection('reviews').doc(r.id),{text:r.text,rating:r.rating,type:r.type,order:r.order,status:'approved',createdAt:firebase.firestore.FieldValue.serverTimestamp()}));
+    await batch.commit();rvFilter='approved';showToast('✅ تم استيراد '+todo.length+' رأي');
+  }catch(e){showToast('⚠️ خطأ: '+e.message);}
+  loading(false);
+};
+
 /* ===== v2 ===== */
 const $=id=>document.getElementById(id);
 const toEn=s=>String(s==null?'':s).replace(/[٠-٩]/g,c=>c.charCodeAt(0)-1632).replace(/[۰-۹]/g,c=>c.charCodeAt(0)-1776);
@@ -765,7 +871,7 @@ window.checkLogin=async function(){
   catch(e){$('loginErr').style.display='block';$('pwInput').value='';}
 };
 window.logout=async function(){
-  okFlag.clear();unsubs.forEach(f=>f());unsubs=[];liveStarted=false;bookings=[];reminders={};
+  okFlag.clear();unsubs.forEach(f=>f());unsubs=[];liveStarted=false;bookings=[];reminders={};reviewsA=[];
   await auth.signOut();$('pwInput').value='';
 };
 
@@ -783,6 +889,7 @@ function startLive(){
       bookings=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>new Date(a.date||0)-new Date(b.date||0));
       renderAll();loading(false);
     },e=>{loading(false);showToast('⚠️ تعذر تحميل الحجوزات ('+e.code+')');}));
+    unsubs.push(db.collection('reviews').onSnapshot(s=>{reviewsA=s.docs.map(d=>({id:d.id,...d.data()}));renderReviewsAdmin();},e=>{console.error(e);showToast('⚠️ تعذر تحميل الآراء ('+e.code+') — راجع قواعد Firestore');}));
     unsubs.push(db.collection('reminders').onSnapshot(s=>{reminders={};s.forEach(d=>reminders[d.id]=d.data());renderReminders();renderMini();},e=>console.error(e)));
   });
 }

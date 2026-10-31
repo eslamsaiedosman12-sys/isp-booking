@@ -5,6 +5,8 @@
 <meta name="apple-mobile-web-app-title" content="ISP Booking">
 <meta name="theme-color" content="#0c0c0c">
 <title>Islam Saeid Photography — احجز جلستك</title>
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js">
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
@@ -237,6 +239,39 @@ button,input,select{font-family:inherit}
 .rv-thanks{text-align:center;padding:18px 6px 6px}
 .rv-thanks .success-icon{margin-bottom:14px}
 .rv-thanks p{font-size:15px;color:var(--text2);line-height:1.9;margin-bottom:16px}
+
+/* ===== تصميم مضغوط: الأقسام والآراء ظاهرين من غير سكرول ===== */
+.hero{padding:14px 16px 12px}
+.brand-ring{width:42px;height:42px;font-size:17px;margin:0 auto 6px}
+.brand-title{font-size:22px}
+.brand-sub{font-size:11px;margin:2px 0 10px}
+.social-btn{padding:5px 14px;font-size:12px}
+.steps{padding:10px 16px 0}
+.form-wrap{padding-top:10px}
+.cat-intro{padding:0 4px}
+.cat-intro h2{font-size:19px;margin-bottom:2px}
+.home-grid{gap:8px;margin-top:8px}
+.home-card{padding:9px 14px;gap:12px}
+.home-ico{flex:0 0 50px;width:50px;height:50px}
+.home-ico svg{width:28px;height:28px}
+.home-ttl{font-size:18px}
+.home-en{font-size:14px;margin-right:8px;display:inline}
+.home-from{margin-top:3px;font-size:11px;padding:1px 10px}
+.home-arrow{font-size:24px}
+.rv-teaser{margin-top:12px}
+.rv-head{margin-bottom:6px}
+.rv-head h3{font-size:17px}
+.rv-head p{font-size:11.5px}
+.rv-score{padding:3px 12px;border-radius:12px}
+.rv-score b{font-size:22px}
+.rv-score small{font-size:10px}
+.rv-mini{padding:10px 16px 8px;gap:2px;flex-basis:86%}
+.rv-mini .rv-q{top:-6px;right:14px;font-size:50px;height:28px}
+.rv-mini .rv-txt{font-size:13.5px;line-height:1.75;-webkit-line-clamp:3;margin-top:6px}
+.rv-more{font-size:11px}
+.rv-track{padding:2px 2px 8px}
+.rv-btns{gap:8px}
+.rv-btn{padding:6px 8px;min-height:38px;font-size:14px}
 </style>
 </head>
 <body>
@@ -261,7 +296,7 @@ button,input,select{font-family:inherit}
   <!-- الباقات: أول ما يفتح العميل الصفحة -->
   <div id="secCatalog">
     <div id="viewHome">
-      <div class="cat-intro"><h2>اختر نوع التصوير</h2><p>اختر القسم المناسب لك لعرض الباقات وتفاصيلها</p></div>
+      <div class="cat-intro"><h2>اختر نوع التصوير</h2></div>
       <div class="home-grid" id="homeGrid"><div class="cat-loading">جاري تحميل الأقسام…</div></div>
       <section class="rv-teaser" id="rvTeaser" aria-label="آراء العملاء"></section>
     </div>
@@ -468,20 +503,27 @@ const DEFAULT_PACKAGES = {
 let PACKAGES = {};
 let selType=null, selPkg=null, selPayMethod=null, extras=[];
 
-let firstLoad=true, resolveReady;
-const packagesReady=new Promise(r=>resolveReady=r);
-function applyPackages(data){
+let firstLoad=true, resolveReady, pkLoaded=false;
+const packagesReady=new Promise(r=>resolveReady=r); // يتحل لما السيرفر يرد
+// آخر باقات اتشافت على الجهاز: تظهر فورًا من غير انتظار
+try{const c=JSON.parse(localStorage.getItem('isp_pk_v1')||'null');if(c&&TYPES.every(t=>Array.isArray(c[t])&&c[t].length)){PACKAGES=c;pkLoaded=true;}}catch(e){}
+function applyPackages(data,fromServer){
   const out={};
   for(const t of TYPES) out[t]=(data&&data[t]&&data[t].length)?data[t]:DEFAULT_PACKAGES[t];
-  PACKAGES=out;
+  PACKAGES=out; pkLoaded=true;
+  if(fromServer){try{localStorage.setItem('isp_pk_v1',JSON.stringify(out));}catch(e){}}
   if(firstLoad){firstLoad=false;resolveReady();}
   if(window.__refresh)window.__refresh();
 }
 // تحديث لحظي: أي تعديل في صفحة الأدمن يظهر هنا فورًا بدون إعادة تحميل
 onSnapshot(collection(db,'packages'),snap=>{
   const data={}; snap.forEach(d=>{data[d.id]=d.data().items||[];});
-  applyPackages(snap.empty?null:data);
-},err=>{console.error('packages load failed, using defaults',err);applyPackages(null);});
+  applyPackages(snap.empty?null:data,true);
+},err=>{
+  console.error('packages load failed',err);
+  if(!pkLoaded)applyPackages(null,false);
+  else if(firstLoad){firstLoad=false;resolveReady();}
+});
 
 function fmt(n){return Number(n).toLocaleString('ar-EG');}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -570,12 +612,13 @@ let curCat=null;
 function renderHome(){
   const el=$('homeGrid'); if(!el)return;
   el.innerHTML=TYPES.map(t=>{
-    const pk=PACKAGES[t]||[]; if(!pk.length)return '';
-    const min=Math.min(...pk.map(p=>Number(p.price)||0));
+    const pk=PACKAGES[t]||[];
+    if(pkLoaded&&!pk.length)return '';
+    const min=pk.length?Math.min(...pk.map(p=>Number(p.price)||0)):null;
     return `<button type="button" class="home-card" data-t="${esc(t)}" onclick="openCategory(this.dataset.t)">
       <div class="home-ico">${ICONS[t]||ICONS.check}</div>
-      <div class="home-txt"><div class="home-ttl">${esc(TYPE_TITLE[t]||t)}</div><div class="home-en">${TYPE_EN[t]||''}</div>
-      <div class="home-desc">${esc(TYPE_DESC[t]||'')}</div><span class="home-from">تبدأ من ${money(min)} جنيه</span></div>
+      <div class="home-txt"><div><span class="home-ttl">${esc(TYPE_TITLE[t]||t)}</span><span class="home-en">${TYPE_EN[t]||''}</span></div>
+      ${min!=null?`<span class="home-from">تبدأ من ${money(min)} جنيه</span>`:''}</div>
       <div class="home-arrow">‹</div></button>`;
   }).join('');
 }
@@ -584,6 +627,7 @@ function renderCategory(){
   const pk=PACKAGES[t]||[];
   const isHall=t==='قاعة فقط';
   $('catHero').innerHTML=`<div class="ci">${ICONS[t]||''}</div><div><h2>${esc(TYPE_TITLE[t]||t)}</h2><small>${TYPE_EN[t]||''}</small></div>`;
+  if(!pkLoaded){$('catList').innerHTML='<div class="cat-loading">جاري تحميل الباقات…</div>';return;}
   $('catList').innerHTML=pk.map((p,i)=>{
     const lines=String(p.details||'').split('\n').map(x=>x.trim()).filter(Boolean);
     const topIco=isHall?ICONS.hall:(/ألبوم|تابلوه/.test(p.details||'')?ICONS.album:ICONS.camera);
@@ -676,7 +720,7 @@ window.__refresh=function(){
 renderHome();
 
 window.bookPackage = async function(type,i){
-  await packagesReady;
+  await Promise.race([packagesReady,new Promise(r=>setTimeout(r,4000))]);
   const p=pkgFrom(type,i); if(!p)return;
   selType=type; selPkg=p; extras=[]; curCat=type;
   $('f_deposit').value='';

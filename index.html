@@ -272,6 +272,43 @@ button,input,select{font-family:inherit}
 .rv-track{padding:2px 2px 8px}
 .rv-btns{gap:8px}
 .rv-btn{padding:6px 8px;min-height:38px;font-size:14px}
+
+/* ===== مراحل الحجز + المراجعة ===== */
+.steps{display:none}
+.stepper{display:flex;list-style:none;max-width:640px;margin:0 auto;padding:8px 8px 0}
+.stepper li{flex:1;text-align:center;position:relative;font-size:10px;font-weight:700;color:var(--text3)}
+.stepper li span{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:22px;height:22px;margin:0 auto 2px;border-radius:50%;border:1.5px solid var(--border);background:var(--surface);font-size:11px;font-weight:800}
+.stepper li:not(:first-child)::before{content:'';position:absolute;top:10px;left:50%;width:100%;height:2px;background:var(--border)}
+.stepper li.done::before,.stepper li.cur::before{background:var(--gold)}
+.stepper li.done{color:var(--text2)}
+.stepper li.done span{background:var(--ink);border-color:var(--ink);color:var(--gold2)}
+.stepper li.cur{color:var(--text)}
+.stepper li.cur span{background:linear-gradient(135deg,#B8963E,#D9BC78);border-color:var(--gold);color:#0c0c0c;box-shadow:0 0 0 3px rgba(184,150,62,.22)}
+.bar-btns{display:flex;gap:8px}
+.bar-btns .btn-submit{flex:1}
+.btn-back-bar{flex:0 0 27%;border:1.5px solid var(--gold);background:var(--surface);color:var(--text);border-radius:var(--radius-sm);font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;min-height:52px}
+.btn-submit:disabled{opacity:.6}
+body.st3 .extra-toggle{display:none}
+.fg.err input,.fg.err select{border-color:#c0392b!important;background:#fff6f5}
+.fg-msg{color:#c0392b;font-size:12px;font-weight:700;margin-top:4px}
+.deposit-input.err{border-color:#c0392b!important;background:#fff6f5}
+.dep-msg{color:#c0392b;font-size:12px;font-weight:700;margin-top:6px}
+.r2-sec{border-bottom:1px dashed var(--border);padding:12px 0}
+.r2-h{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:14px;margin-bottom:6px}
+.r2-edit{background:none;border:1px solid var(--gold);color:#6f5a22;border-radius:99px;padding:2px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.r2-row{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:3px 0;line-height:1.8}
+.r2-row span:first-child{color:var(--text2);flex:0 0 auto}
+.r2-row b{text-align:left;word-break:break-word}
+.r2-tot .r2-row{font-size:15px}
+.r2-gold{color:#8a6d1f}
+.r2-green{color:#2e7d32}
+.policy{background:var(--gold3);border:1px solid rgba(184,150,62,.4);border-radius:var(--radius-sm);padding:12px 14px;margin:14px 0 10px;font-size:13px;line-height:1.9}
+.policy-t{font-weight:800;margin-bottom:4px}
+.policy ul{list-style:none}
+.policy li{position:relative;padding-right:16px;margin:2px 0}
+.policy li::before{content:'•';position:absolute;right:3px;color:var(--gold)}
+.agree{display:flex;gap:10px;align-items:center;font-size:14px;font-weight:700;padding:6px 2px}
+.agree input{width:22px;height:22px;accent-color:#B8963E;flex:0 0 auto}
 </style>
 </head>
 <body>
@@ -287,10 +324,14 @@ button,input,select{font-family:inherit}
   </div>
 </div>
 
-<div class="steps">
-  <div class="step-pill active" id="s1"></div>
-  <div class="step-pill" id="s2"></div>
-</div>
+<ol class="stepper" id="stepper" aria-label="خطوات الحجز">
+  <li data-s="1" class="cur"><span>1</span>المناسبة</li>
+  <li data-s="2"><span>2</span>الباقة</li>
+  <li data-s="3"><span>3</span>الإضافات</li>
+  <li data-s="4"><span>4</span>البيانات</li>
+  <li data-s="5"><span>5</span>المراجعة</li>
+  <li data-s="6"><span>6</span>الإرسال</li>
+</ol>
 
 <div class="form-wrap">
   <!-- الباقات: أول ما يفتح العميل الصفحة -->
@@ -323,29 +364,30 @@ button,input,select{font-family:inherit}
 
   <!-- STEP 3 -->
   <div class="card" id="secForm" style="display:none">
-    <div class="card-head"><div class="card-icon">2</div><div><div class="card-title">تأكيد البيانات</div><div class="card-sub">الخطوة 2 من 2</div></div></div>
+    <div class="card-head"><div class="card-icon">4</div><div><div class="card-title">تأكيد البيانات</div><div class="card-sub">الخطوة 4 من 6</div></div></div>
     <div class="card-body">
       <div class="form-row">
         <div class="fg"><label for="f_groom">اسم العريس *</label><input type="text" id="f_groom" placeholder="محمد علي"></div>
         <div class="fg"><label for="f_bride">اسم العروسة *</label><input type="text" id="f_bride" placeholder="فاطمة أحمد"></div>
       </div>
       <div class="fg"><label for="f_phone1">رقم العريس *</label><input type="tel" inputmode="tel" autocomplete="tel" id="f_phone1" placeholder="مثال: 01012345678"></div>
-      <div class="fg"><label for="f_phone2">رقم اتصال آخر (اختياري)</label><input type="tel" inputmode="tel" id="f_phone2" placeholder="مثال: 01012345678"></div>
+      <div class="fg"><label for="f_phone2">رقم هاتف إضافي (اختياري)</label><input type="tel" inputmode="tel" id="f_phone2" placeholder="مثال: 01012345678"></div>
       <div class="form-row">
-        <div class="fg"><label for="f_date">تاريخ التصوير</label><input type="date" id="f_date"></div>
+        <div class="fg"><label for="f_date">تاريخ المناسبة *</label><input type="date" id="f_date"></div>
         <div class="fg"><label for="f_hh">وقت البداية (24 ساعة)</label><div class="time24" dir="ltr"><select id="f_hh" onchange="syncTime()" aria-label="الساعة"><option value="">ساعة</option></select><span>:</span><select id="f_mm" onchange="syncTime()" aria-label="الدقيقة"><option value="">دقيقة</option></select><input type="hidden" id="f_time"></div></div>
       </div>
       <div class="fg"><label for="f_session">مكان السيشن</label><input type="text" id="f_session" placeholder="كورنيش النيل، الأهرامات..."></div>
-      <div class="fg"><label for="f_hall">مكان القاعة</label><input type="text" id="f_hall" placeholder="اسم الفندق أو القاعة"></div>
+      <div class="fg"><label for="f_hall">اسم القاعة / الفندق</label><input type="text" id="f_hall" placeholder="اسم الفندق أو القاعة"></div>
+      <div class="fg"><label for="f_hallAddr">عنوان القاعة (اختياري)</label><input type="text" id="f_hallAddr" placeholder="المنطقة / الشارع / المدينة"></div>
 
       <div class="pay-summary">
         <div class="pay-label" style="margin-bottom:4px">ملخص الباقات المختارة</div>
         <div id="sum_lines"></div>
         <div class="pay-row" style="margin:12px 0 0"><span class="pay-label">الإجمالي النهائي</span><span class="pay-val gold" style="font-size:18px" id="sum_total">—</span></div>
         <hr class="pay-divider">
-        <div class="pay-label" style="margin-bottom:8px">العربون المدفوع (جنيه)</div>
+        <div class="pay-label" style="margin-bottom:8px">قيمة العربون (جنيه)</div>
         <input type="number" inputmode="numeric" class="deposit-input" id="f_deposit" placeholder="أدخل مبلغ العربون" oninput="calcRem()">
-        <div class="pay-label" style="margin:14px 0 8px">طريقة الدفع</div>
+        <div class="pay-label" style="margin:14px 0 8px">طريقة دفع العربون</div>
         <div class="payment-methods">
           <div class="pm-btn" onclick="selPay(&#39;نقدي&#39;)" id="pm_نقدي"><div class="pm-name">نقدي</div></div>
           <div class="pm-btn" onclick="selPay(&#39;فودافون كاش&#39;)" id="pm_فودافون كاش"><div class="pm-name">فودافون كاش</div></div>
@@ -354,6 +396,27 @@ button,input,select{font-family:inherit}
         <hr class="pay-divider">
         <div class="pay-row" style="margin-bottom:0"><span class="pay-label">المبلغ الباقي</span><span class="pay-val green" id="sum_rem">—</span></div>
       </div>
+    </div>
+  </div>
+
+  <div class="card" id="secReview" style="display:none">
+    <div class="card-head"><div class="card-icon">5</div><div><div class="card-title">مراجعة الطلب</div><div class="card-sub">راجع كل التفاصيل قبل الإرسال</div></div></div>
+    <div class="card-body">
+      <div id="reviewBody"></div>
+      <div class="policy" id="policyBox">
+        <div class="policy-t">📋 شروط الحجز</div>
+        <ul>
+          <li>يتم تأكيد الحجز بعد الاتفاق واستلام العربون، والعربون غير قابل للاسترداد.</li>
+          <li>باقي المبلغ يُسدَّد يوم التصوير.</li>
+          <li>مصاريف القاعات أو الأماكن غير مشمولة في أسعار الباقات إلا إذا تم الاتفاق على ذلك.</li>
+          <li>مدة التصوير المعتادة ساعتان، وأي زيادة يتم الاتفاق عليها مسبقًا.</li>
+          <li>يتم الاتفاق على المكان والوقت مع العميل.</li>
+          <li>مدة تسليم الصور من 15 إلى 20 يومًا من تاريخ التصوير.</li>
+          <li>أي تأخير من العميل يؤثر على جدول التصوير ويُخصم من وقت السيشن، ومسؤوليته على العميل.</li>
+          <li>في حالة التأجيل يُرجى الإبلاغ قبل الموعد بوقت كافٍ لإعادة التنسيق.</li>
+        </ul>
+      </div>
+      <label class="agree"><input type="checkbox" id="f_agree"> <span>قرأت شروط الحجز وأوافق عليها</span></label>
     </div>
   </div>
 
@@ -371,7 +434,7 @@ button,input,select{font-family:inherit}
 
 <div class="submit-bar" id="submitBar" style="display:none"><div class="submit-in">
   <div class="bar-total" id="barTotal"><span id="barCount"></span><span>الإجمالي <b id="barSum"></b></span></div>
-  <button class="btn-submit" onclick="submitBooking()">إرسال طلب الحجز</button>
+  <div class="bar-btns"><button type="button" class="btn-back-bar" id="barBack" onclick="stepBack()">رجوع</button><button type="button" class="btn-submit" id="barNext" onclick="stepNext()">متابعة</button></div>
 </div></div>
 
 <div class="success-screen" id="successScreen">
@@ -528,7 +591,7 @@ onSnapshot(collection(db,'packages'),snap=>{
 function fmt(n){return Number(n).toLocaleString('ar-EG');}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-function steps(n){for(let i=1;i<=2;i++)document.getElementById('s'+i).classList.toggle('active',i<=n);}
+function steps(n){document.querySelectorAll('#stepper li').forEach(li=>{const k=+li.dataset.s;li.classList.toggle('done',k<n);li.classList.toggle('cur',k===n);});}
 const $=id=>document.getElementById(id);
 
 // ---- Multi-package helpers: prices always come from PACKAGES (Firestore / defaults) ----
@@ -638,12 +701,12 @@ function renderCategory(){
   }).join('');
 }
 window.openCategory=function(t){
-  curCat=t; renderCategory();
+  curCat=t; renderCategory(); steps(2);
   $('viewHome').style.display='none'; $('viewCat').style.display='block';
   window.scrollTo({top:0,behavior:'smooth'});
 };
 window.showHome=function(){
-  curCat=null; $('viewCat').style.display='none'; $('viewReviews').style.display='none'; $('viewHome').style.display='block';
+  steps(1); curCat=null; $('viewCat').style.display='none'; $('viewReviews').style.display='none'; $('viewHome').style.display='block';
   window.scrollTo({top:0,behavior:'smooth'});
 };
 
@@ -723,24 +786,106 @@ window.bookPackage = async function(type,i){
   await Promise.race([packagesReady,new Promise(r=>setTimeout(r,4000))]);
   const p=pkgFrom(type,i); if(!p)return;
   selType=type; selPkg=p; extras=[]; curCat=type;
-  $('f_deposit').value='';
-  $('chType').textContent=type;
+  $('chType').textContent=TYPE_TITLE[type]||type;
   $('chBody').innerHTML=`<div class="ch-name">${esc(p.name)}</div><div class="ch-det">${esc(p.details).replace(/\n/g,'<br>')}</div><div class="ch-price">${money(p.price)} <small>جنيه</small></div>`;
-  $('secCatalog').style.display='none';
-  ['secChosen','secForm'].forEach(id=>$(id).style.display='block');
-  $('extraSec').style.display='flex';$('submitBar').style.display='block';
-  renderExtras(); renderSummary(); steps(2);
+  goStep(3);
+};
+let stage=0, FORM=null;
+window.goStep=function(n){
+  stage=n; steps(n);
+  const show=(id,v,d)=>{$(id).style.display=v?(d||'block'):'none';};
+  show('secCatalog',false);
+  show('secChosen',n===3||n===4);
+  show('extraSec',n===3,'flex');
+  show('secForm',n===4);
+  show('secReview',n===5);
+  show('submitBar',true);
+  document.body.classList.toggle('st3',n===3);
+  renderSummary();
+  if(n===3){$('extraBox').style.display='block';renderExtras();}
+  if(n===5)renderReview();
+  const nx=$('barNext');
+  nx.textContent=n===3?'متابعة لإدخال البيانات ‹':n===4?'مراجعة الطلب ‹':'إرسال طلب الحجز ✓';
+  nx.disabled=false;
   window.scrollTo({top:0,behavior:'smooth'});
 };
+window.stepNext=function(){
+  if(stage===3)return goStep(4);
+  if(stage===4){if(!validateForm())return;return goStep(5);}
+  if(stage===5)return submitBooking();
+};
+window.stepBack=function(){
+  if(stage===3)return showCatalog();
+  if(stage===4)return goStep(3);
+  if(stage===5)return goStep(4);
+};
 window.showCatalog = function(){
-  selType=null; selPkg=null; extras=[];
+  selType=null; selPkg=null; extras=[]; stage=0;
+  document.body.classList.remove('st3');
   $('viewReviews').style.display='none';
-  if(curCat){renderCategory();$('viewHome').style.display='none';$('viewCat').style.display='block';}else{renderHome();$('viewHome').style.display='block';$('viewCat').style.display='none';}
-  ['secChosen','secForm','extraSec','submitBar'].forEach(id=>$(id).style.display='none');
+  if(curCat){renderCategory();$('viewHome').style.display='none';$('viewCat').style.display='block';steps(2);}else{renderHome();$('viewHome').style.display='block';$('viewCat').style.display='none';steps(1);}
+  ['secChosen','secForm','secReview','extraSec','submitBar'].forEach(id=>$(id).style.display='none');
   $('extraBox').style.display='none'; $('extraToggle').setAttribute('aria-expanded','false');
   $('barTotal').style.display='none'; $('secCatalog').style.display='block';
-  steps(1); window.scrollTo({top:0,behavior:'smooth'});
+  window.scrollTo({top:0,behavior:'smooth'});
 };
+
+// ---- التحقق من البيانات ----
+const toEnD=x=>String(x||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+function normPhone(raw){ // موبايل مصري: 010/011/012/015 + 8 أرقام
+  let x=toEnD(raw).replace(/[\s\-().]/g,''); if(!x)return '';
+  x=x.replace(/^\+?20/,'');
+  if(!/^0?1[0125]\d{8}$/.test(x))return null;
+  return x.startsWith('0')?x:'0'+x;
+}
+const cairoToday=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo'}).format(new Date());
+function fclear(){document.querySelectorAll('#secForm .fg.err').forEach(f=>f.classList.remove('err'));document.querySelectorAll('#secForm .fg-msg,#secForm .dep-msg').forEach(m=>m.remove());$('f_deposit').classList.remove('err');}
+function ferr(id,msg){const el=$(id),fg=el.closest('.fg')||el.parentElement;fg.classList.add('err');const m=document.createElement('div');m.className='fg-msg';m.textContent=msg;fg.appendChild(m);return el;}
+function validateForm(){
+  fclear(); let first=null,msg='';
+  const bad=(id,m)=>{const el=ferr(id,m);if(!first){first=el;msg=m;}};
+  const groom=$('f_groom').value.trim(),bride=$('f_bride').value.trim();
+  if(groom.length<2)bad('f_groom','اكتب اسم العريس');
+  if(bride.length<2)bad('f_bride','اكتب اسم العروسة');
+  const phone1=normPhone($('f_phone1').value);
+  if(!phone1)bad('f_phone1',phone1===null?'رقم غير صحيح، مثال: 01012345678':'أدخل رقم الهاتف');
+  const phone2=normPhone($('f_phone2').value);
+  if(phone2===null)bad('f_phone2','رقم غير صحيح، مثال: 01012345678');
+  const date=$('f_date').value;
+  if(!date)bad('f_date','اختر تاريخ المناسبة');
+  else if(date<cairoToday())bad('f_date','التاريخ فات، اختر تاريخًا قادمًا');
+  const total=totalPrice();
+  const depRaw=$('f_deposit').value;
+  const deposit=depRaw===''?0:Number(toEnD(depRaw));
+  if(depRaw!==''&&(!isFinite(deposit)||deposit<0)){
+    $('f_deposit').classList.add('err');const m=document.createElement('div');m.className='dep-msg';m.textContent='قيمة العربون غير صحيحة';$('f_deposit').insertAdjacentElement('afterend',m);
+    if(!first){first=$('f_deposit');msg=m.textContent;}
+  }else if(deposit>total){
+    $('f_deposit').classList.add('err');const m=document.createElement('div');m.className='dep-msg';m.textContent='العربون لا يمكن أن يكون أكبر من إجمالي الحجز ('+fmt(total)+' جنيه)';$('f_deposit').insertAdjacentElement('afterend',m);
+    if(!first){first=$('f_deposit');msg=m.textContent;}
+  }
+  if(deposit>0&&!selPayMethod){const pm=document.querySelector('.payment-methods');const m=document.createElement('div');m.className='dep-msg';m.textContent='اختر طريقة دفع العربون';pm.insertAdjacentElement('afterend',m);if(!first){first=pm;msg=m.textContent;}}
+  if(first){showToast('⚠️ '+msg);first.scrollIntoView({behavior:'smooth',block:'center'});try{first.focus({preventScroll:true});}catch(e){}return false;}
+  FORM={groom,bride,phone1,phone2:phone2||'',date,time:$('f_time').value,session:$('f_session').value.trim(),hall:$('f_hall').value.trim(),hallAddr:$('f_hallAddr').value.trim(),deposit};
+  return true;
+}
+function renderReview(){
+  const f=FORM,list=chosen(),total=totalPrice(),rem=Math.max(0,total-f.deposit);
+  const dStr=new Date(f.date+'T00:00:00').toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const row=(l,v)=>v?`<div class="r2-row"><span>${l}</span><b>${esc(v)}</b></div>`:'';
+  $('reviewBody').innerHTML=`
+    <div class="r2-sec"><div class="r2-h"><span>🎯 المناسبة والباقات</span><button type="button" class="r2-edit" onclick="goStep(3)">تعديل</button></div>
+      ${row('نوع المناسبة',TYPE_TITLE[selType]||selType)}
+      ${list.map((p,i)=>`<div class="r2-row"><span>${esc(pkgLabel(p))}${i?' (إضافية)':''}</span><b>${fmt(p.price)} ج</b></div>`).join('')}</div>
+    <div class="r2-sec"><div class="r2-h"><span>👤 بيانات الحجز</span><button type="button" class="r2-edit" onclick="goStep(4)">تعديل</button></div>
+      ${row('العريس',f.groom)}${row('العروسة',f.bride)}${row('هاتف العريس',f.phone1)}${row('هاتف إضافي',f.phone2)}
+      ${row('التاريخ',dStr)}${row('الوقت',f.time)}${row('مكان التصوير',f.session)}${row('القاعة',f.hall)}${row('عنوان القاعة',f.hallAddr)}</div>
+    <div class="r2-sec r2-tot"><div class="r2-h"><span>💰 المبلغ</span><button type="button" class="r2-edit" onclick="goStep(4)">تعديل</button></div>
+      <div class="r2-row"><span>إجمالي الحجز</span><b class="r2-gold">${fmt(total)} جنيه</b></div>
+      <div class="r2-row"><span>العربون</span><b class="r2-green">${fmt(f.deposit)} جنيه</b></div>
+      ${f.deposit>0?row('طريقة دفع العربون',selPayMethod):''}
+      <div class="r2-row"><span>المبلغ المتبقي (يوم التصوير)</span><b>${fmt(rem)} جنيه</b></div></div>`;
+}
 
 window.selPay = function(method){
   selPayMethod=method;
@@ -752,23 +897,18 @@ window.calcRem = function(){
   if(!selPkg){return;}
   const d=parseFloat($('f_deposit').value)||0;
   $('sum_rem').textContent=$('f_deposit').value===''?'—':fmt(Math.max(0,totalPrice()-d))+' جنيه';
+  $('f_deposit').classList.toggle('err',d>totalPrice());
+  document.querySelectorAll('#secForm .dep-msg').forEach(m=>m.remove());
 };
 
 window.submitBooking = async function(){
-  if(!selType){showToast('⚠️ اختر نوع التصوير');return;}
-  if(!selPkg){showToast('⚠️ اختر الباقة');return;}
-  const groom=$('f_groom').value.trim();
-  const bride=$('f_bride').value.trim();
-  const phone1=$('f_phone1').value.trim();
-  if(!groom||!bride){showToast('⚠️ أدخل اسم العريس والعروسة');return;}
-  if(!phone1){showToast('⚠️ أدخل رقم التليفون');return;}
-
-  const phone2=$('f_phone2').value.trim();
-  const date=$('f_date').value;
-  const time=$('f_time').value;
-  const session=$('f_session').value.trim();
-  const hall=$('f_hall').value.trim();
-  const deposit=parseFloat($('f_deposit').value)||0;
+  if(window.__submitting)return;
+  if(!selType||!selPkg){showToast('⚠️ اختر نوع التصوير والباقة');return;}
+  if(!validateForm()){goStep(4);return;}
+  if(!$('f_agree').checked){showToast('⚠️ وافق على شروط الحجز قبل الإرسال');$('f_agree').focus();return;}
+  const {groom,bride,phone1,phone2,date,time,hallAddr,deposit}=FORM;
+  const session=FORM.session,hall=FORM.hall;
+  window.__submitting=true; $('barNext').disabled=true;
   const list=chosen();
   const total=totalPrice();
   const remaining=Math.max(0,total-deposit);
@@ -792,6 +932,8 @@ window.submitBooking = async function(){
       date, time,
       sessionLocation: session,
       hallLocation: hall,
+      hallAddress: hallAddr,
+      policyAccepted: true,
       deposit, remaining,
       paymentMethod: selPayMethod||'غير محدد',
       status: 'pending',
@@ -808,27 +950,30 @@ window.submitBooking = async function(){
 
     $('waAdminLink').href=`https://wa.me/201008194341?text=${encodeURIComponent(msg)}`;
     $('successMsg').textContent=`مبروك ${groom} و${bride}! 🎊 تم تسجيل حجزكم بنجاح. برجاء قراءة التعليمات أدناه قبل يوم التصوير.`;
-    $('successScreen').classList.add('show');
+    steps(6); $('successScreen').classList.add('show');
     buildCopy({groom,bride,phone1,phone2,type:selType,date:date?dateStr:'',time,session,hall,list:list.map(p=>({name:pkgLabel(p),price:p.price})),total,deposit,method:selPayMethod||'غير محدد',remaining,today:new Date().toLocaleDateString('ar-EG',{timeZone:'Africa/Cairo',year:'numeric',month:'long',day:'numeric'}),iso:new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo'}).format(new Date())});
   } catch(e){
     $('loading').classList.remove('show');
+    window.__submitting=false; $('barNext').disabled=false;
     showToast('⚠️ حدث خطأ، حاول تاني');
     console.error(e);
   }
 };
 
 window.resetForm=function(){
-  selType=null;selPkg=null;selPayMethod=null;extras=[];window.__formShown=false;
+  selType=null;selPkg=null;selPayMethod=null;extras=[];window.__formShown=false;window.__submitting=false;FORM=null;stage=0;
   document.querySelectorAll('.type-card,.pkg-card,.pm-btn').forEach(c=>c.classList.remove('selected'));
   curCat=null; showCatalog(); showHome();
   $('extraBox').style.display='none';
   $('extraToggle').setAttribute('aria-expanded','false');
   $('barTotal').style.display='none';
-  ['f_groom','f_bride','f_phone1','f_phone2','f_session','f_hall','f_time','f_date','f_deposit'].forEach(id=>$(id).value='');
+  ['f_groom','f_bride','f_phone1','f_phone2','f_session','f_hall','f_hallAddr','f_time','f_date','f_deposit'].forEach(id=>$(id).value='');
+  $('f_agree').checked=false; fclear(); $('f_date').min=cairoToday();
   $('successScreen').classList.remove('show');
   $('f_hh').value='';$('f_mm').value='';$('copyImg').style.display='none';
   steps(1); window.scrollTo({top:0,behavior:'smooth'});
 };
+$('f_date').min=cairoToday();
 
 // ---- وقت البداية بنظام 24 ساعة (قيمة HH:MM في الحقل المخفي f_time، فمفيش تغيير في باقي النظام) ----
 (function(){

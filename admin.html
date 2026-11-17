@@ -175,6 +175,23 @@ body{font-family:'Cairo',sans-serif;background:var(--surface2);color:var(--text)
 .btn-hide-rv{background:#eee;color:#555;border:none;border-radius:var(--radius-sm);padding:10px 14px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
 .rv-import{background:var(--blue-l);border:1px solid #b9d3ee;color:var(--blue);border-radius:var(--radius-sm);padding:12px 14px;font-size:12px;margin-bottom:14px;line-height:1.8}
 .rv-import button{margin-top:8px;width:100%;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);padding:10px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
+
+.filter-wrap.multi{flex-wrap:wrap}
+.filter-wrap.multi input,.filter-wrap.multi select{flex:1 1 44%;min-width:0}
+.filter-wrap.multi input#searchQ{flex:1 1 100%}
+.ledger{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:8px 0}
+.lg-row{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border);font-size:12px}
+.lg-row:last-child{border-bottom:none}
+.lg-main b{display:block;font-size:13px}
+.lg-main small{color:var(--text3)}
+.lg-amt{font-weight:800;color:var(--green);white-space:nowrap}
+.pay-sum{background:#fff;border-radius:10px;padding:12px;margin-bottom:8px}
+.pay-sum div{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+.pay-sum div:last-child{margin-bottom:0}
+.pay-form{background:#fff;border:1px dashed #a8d5b0;border-radius:10px;padding:12px;margin-top:10px}
+.pay-form .dgrid{margin-bottom:8px}
+.btn-paid:disabled,.btn-save-edit:disabled{opacity:.6}
+.note-admin{width:100%;min-height:90px}
 </style>
 </head>
 <body>
@@ -214,8 +231,13 @@ body{font-family:'Cairo',sans-serif;background:var(--surface2);color:var(--text)
 </div>
 
 <div class="tab-pane active" id="tab-bookings">
-  <div class="filter-wrap">
-    <input type="text" id="searchQ" placeholder="🔍 ابحث بالاسم..." oninput="filterList()">
+  <div class="filter-wrap multi">
+    <input type="text" id="searchQ" placeholder="🔍 ابحث بالاسم أو رقم الهاتف..." oninput="filterList()">
+    <select id="fMonth" onchange="filterList()"><option value="">كل الشهور</option><option value="01">يناير</option><option value="02">فبراير</option><option value="03">مارس</option><option value="04">أبريل</option><option value="05">مايو</option><option value="06">يونيو</option><option value="07">يوليو</option><option value="08">أغسطس</option><option value="09">سبتمبر</option><option value="10">أكتوبر</option><option value="11">نوفمبر</option><option value="12">ديسمبر</option></select>
+    <select id="fYear" onchange="filterList()"><option value="">كل السنوات</option></select>
+    <select id="fStatus" onchange="filterList()"><option value="">الحجوزات النشطة</option><option value="ALL">كل الحجوزات (مع الأرشيف)</option><option value="pending">جديد</option><option value="awaiting">في انتظار التأكيد</option><option value="confirmed">مؤكد</option><option value="done">تم التصوير</option><option value="canceled">ملغي</option></select>
+    <select id="fPay" onchange="filterList()"><option value="">كل حالات الدفع</option><option value="unpaid">لم يتم الدفع</option><option value="deposit">تم دفع العربون</option><option value="partial">دفع جزئي</option><option value="full">تم الدفع بالكامل</option></select>
+    <select id="fSort" onchange="filterList()"><option value="asc">الترتيب: التاريخ الأقرب أولًا</option><option value="desc">الترتيب: التاريخ الأبعد أولًا</option><option value="new">الترتيب: الأحدث إضافة</option></select>
   </div>
   <div class="list-wrap">
     <div class="list-hdr" id="listHdr"></div>
@@ -263,6 +285,7 @@ body{font-family:'Cairo',sans-serif;background:var(--surface2);color:var(--text)
 </div>
 
 <div class="tab-pane" id="tab-archive">
+  <div class="filter-wrap"><select id="archFilter" onchange="renderArchive()"><option value="">الكل</option><option value="done">تم التصوير</option><option value="canceled">الملغاة فقط</option><option value="expired">منتهية التاريخ</option></select></div>
   <div class="list-wrap">
     <div class="list-hdr" id="archiveHdr"></div>
     <div id="archiveList"></div>
@@ -320,7 +343,16 @@ const fmtDate=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-GB',{year:'num
 const showToast=m=>{const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);};
 const loading=s=>document.getElementById('loading').classList.toggle('show',s);
 
-const statusInfo=s=>s==='confirmed'?{label:'مؤكد',cls:'b-confirmed',acc:'confirmed'}:s==='canceled'?{label:'ملغي',cls:'b-archived',acc:'archived'}:s==='done'?{label:'منتهي',cls:'b-done',acc:'done'}:{label:'معلق',cls:'b-pending',acc:'pending'};
+const statusInfo=s=>s==='confirmed'?{label:'مؤكد',cls:'b-confirmed',acc:'confirmed'}:s==='canceled'?{label:'ملغي',cls:'b-archived',acc:'archived'}:s==='done'?{label:'تم التصوير',cls:'b-done',acc:'done'}:s==='awaiting'?{label:'في انتظار التأكيد',cls:'b-pending',acc:'pending'}:{label:'جديد',cls:'b-pending',acc:'pending'};
+/* حالة الحجز (status) منفصلة عن حالة الدفع (تُحسب من المدفوعات) */
+const paidOf=b=>Number(b.deposit||0)+Number(b.paid||0);
+const remOf=b=>Math.max(0,Number(b.price||0)-paidOf(b));
+const payState=b=>{const p=paidOf(b),t=Number(b.price||0);if(p<=0)return 'unpaid';if(t>0&&p>=t)return 'full';return Number(b.paid||0)>0?'partial':'deposit';};
+const PAY_LBL={unpaid:'لم يتم الدفع',deposit:'تم دفع العربون',partial:'دفع جزئي',full:'تم دفع المبلغ بالكامل'};
+const PAY_CLS={unpaid:'chip warn',deposit:'chip',partial:'chip',full:'chip ok'};
+const payBadge=b=>`<span class="${PAY_CLS[payState(b)]}">${PAY_LBL[payState(b)]}</span>`;
+const busy=new Set();
+async function once(k,fn){if(busy.has(k))return;busy.add(k);try{return await fn();}finally{busy.delete(k);}}
 const cairoToday=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo'}).format(new Date());
 const daysUntil=d=>{if(!d)return null;const x=Date.parse(d+'T00:00:00Z'),t=Date.parse(cairoToday()+'T00:00:00Z');return isNaN(x)?null:Math.round((x-t)/86400000);};
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -351,23 +383,29 @@ async function loadBookings(){
 
 /* ===== STATS ===== */
 function renderStats(){
-  const active=bookings.filter(b=>!isArch(b));
-  const allActive=bookings.filter(b=>b.status!=='done'||isExpired(b));
-  const totalDep=bookings.reduce((s,b)=>s+Number(b.deposit||0)+Number(b.paid||0),0);
-  const totalRem=bookings.reduce((s,b)=>s+Number(b.remaining||0),0);
-  const totalPaid=bookings.reduce((s,b)=>s+(Number(b.price||0)-Number(b.remaining||0)),0);
+  const live=bookings.filter(b=>b.status!=='canceled');
+  const n=f=>bookings.filter(f).length;
+  const dep=live.reduce((s,b)=>s+Number(b.deposit||0),0);
+  const extra=live.reduce((s,b)=>s+Number(b.paid||0),0);
+  const rem=live.reduce((s,b)=>s+remOf(b),0);
+  const canc=bookings.filter(b=>b.status==='canceled');
+  const cancPaid=canc.reduce((s,b)=>s+paidOf(b),0);
   document.getElementById('statsGrid').innerHTML=`
-    <div class="stat"><div class="stat-label">حجوزات قادمة</div><div class="stat-val">${active.length}</div></div>
-    <div class="stat"><div class="stat-label">في الأرشيف</div><div class="stat-val" style="color:var(--blue)">${bookings.filter(b=>isArch(b)).length}</div></div>
-    <div class="stat dark"><div class="stat-label">إجمالي المحصّل</div><div class="stat-val gold">${fmt(totalPaid)} ج</div></div>
-    <div class="stat"><div class="stat-label">مبالغ باقية</div><div class="stat-val a">${fmt(totalRem)} ج</div></div>
-    <div class="stat" style="grid-column:1/-1;background:linear-gradient(135deg,#e8f5eb,#f0faf2);border-color:#a8d5b0"><div class="stat-label">إجمالي العربونات المقبوضة</div><div class="stat-val g">${fmt(totalDep)} ج</div></div>`;
+    <div class="stat"><div class="stat-label">إجمالي الحجوزات</div><div class="stat-val">${fmt(bookings.length)}</div></div>
+    <div class="stat"><div class="stat-label">جديدة / بانتظار التأكيد</div><div class="stat-val a">${fmt(n(b=>!b.status||b.status==='pending'||b.status==='awaiting'))}</div></div>
+    <div class="stat"><div class="stat-label">مؤكدة</div><div class="stat-val g">${fmt(n(b=>b.status==='confirmed'))}</div></div>
+    <div class="stat"><div class="stat-label">تم التصوير</div><div class="stat-val" style="color:var(--blue)">${fmt(n(b=>b.status==='done'))}</div></div>
+    <div class="stat"><div class="stat-label">ملغاة</div><div class="stat-val" style="color:var(--text3)">${fmt(canc.length)}</div></div>
+    <div class="stat dark"><div class="stat-label">إجمالي المحصّل</div><div class="stat-val gold">${fmt(dep+extra)} ج</div></div>
+    <div class="stat" style="background:linear-gradient(135deg,#e8f5eb,#f0faf2);border-color:#a8d5b0"><div class="stat-label">عربونات مقبوضة</div><div class="stat-val g">${fmt(dep)} ج</div></div>
+    <div class="stat"><div class="stat-label">مبالغ إضافية مقبوضة</div><div class="stat-val g">${fmt(extra)} ج</div></div>
+    <div class="stat" style="grid-column:1/-1"><div class="stat-label">إجمالي المتبقي على العملاء (بدون الملغي)</div><div class="stat-val a">${fmt(rem)} ج</div>${cancPaid>0?`<div style="font-size:11px;color:var(--text3);margin-top:4px">مقبوض من حجوزات ملغاة (غير محتسب في الإجماليات): ${fmt(cancPaid)} ج</div>`:''}</div>`;
 }
 
 /* ===== CARD ===== */
 function bookingCard(b,archived=false){
   const si=statusInfo(b.status);
-  const pct=b.price>0?Math.round(((Number(b.deposit||0)+Number(b.paid||0))/b.price)*100):0;
+  const pct=b.price>0?Math.min(100,Math.round(paidOf(b)/b.price*100)):0;
   const days=daysUntil(b.date);
   const todayTag=(!archived&&days===0)?'<span class="today-tag">🔴 اليوم</span>':(!archived&&days===1)?'<span class="today-tag" style="background:#e8f1fb;color:#1a5fa5;border-color:#90caf9">🔵 غداً</span>':'';
   const acc=archived?'archived':si.acc;
@@ -376,13 +414,14 @@ function bookingCard(b,archived=false){
     <div class="bacc ${acc}"></div>
     <div class="bbody">
       <div class="btop"><div>${todayTag}<div class="bnames">${esc(b.groom)||'—'}<span class="amp">&</span>${esc(b.bride)||'—'}</div></div>${badge}</div>
+      <div style="margin:2px 0 6px">${payBadge(b)}</div>
       <div class="bmeta">
         <div class="bm">📅 ${fmtDate(b.date)}</div><div class="bm">⏰ ${esc(b.time)||'—'}</div>
         <div class="bm">🎯 ${b.type||'—'}</div><div class="bm">📦 ${esc(b.package)||'—'}</div>
         <div class="bm">📍 ${esc(b.sessionLocation)||'—'}</div><div class="bm">📞 ${esc(b.phone1)||'—'}</div>
       </div>
       <div class="bpay">
-        <div class="bpay-row"><span style="color:var(--text2)">نسبة السداد ${pct}%</span><div style="display:flex;gap:10px"><span class="paid">+${fmt(Number(b.deposit||0)+Number(b.paid||0))} ج</span><span class="rem">-${fmt(b.remaining||0)} ج</span></div></div>
+        <div class="bpay-row"><span style="color:var(--text2)">نسبة السداد ${pct}%</span><div style="display:flex;gap:10px"><span class="paid">+${fmt(paidOf(b))} ج</span><span class="rem">-${fmt(remOf(b))} ج</span></div></div>
         <div class="progress"><div class="progress-fill" style="width:${pct}%"></div></div>
       </div>
     </div>
@@ -390,19 +429,35 @@ function bookingCard(b,archived=false){
 }
 
 window.filterList=function(){
-  const q=document.getElementById('searchQ').value.toLowerCase();
-  const active=bookings.filter(b=>!isArch(b));
-  const filtered=active.filter(b=>!q||(b.groom||'').toLowerCase().includes(q)||(b.bride||'').toLowerCase().includes(q));
-  document.getElementById('listHdr').textContent=filtered.length+' حجز قادم';
-  document.getElementById('bookingsList').innerHTML=filtered.length?filtered.map(b=>bookingCard(b)).join(''):'<div class="empty"><div>📅</div><p>لا توجد حجوزات قادمة</p></div>';
+  const q=toEn(document.getElementById('searchQ').value).toLowerCase().trim();
+  const qd=q.replace(/\D/g,'');
+  const m=document.getElementById('fMonth').value,y=document.getElementById('fYear').value;
+  const st=document.getElementById('fStatus').value,pay=document.getElementById('fPay').value,sort=document.getElementById('fSort').value;
+  let l=st===''?bookings.filter(b=>!isArch(b)):bookings.slice();
+  if(st&&st!=='ALL')l=l.filter(b=>(b.status||'pending')===st);
+  if(q)l=l.filter(b=>(b.groom||'').toLowerCase().includes(q)||(b.bride||'').toLowerCase().includes(q)||(qd.length>=3&&[b.phone1,b.phone2].some(ph=>toEn(ph||'').replace(/\D/g,'').includes(qd))));
+  if(m)l=l.filter(b=>(b.date||'').slice(5,7)===m);
+  if(y)l=l.filter(b=>(b.date||'').slice(0,4)===y);
+  if(pay)l=l.filter(b=>payState(b)===pay);
+  const t=b=>b.createdAt&&b.createdAt.toMillis?b.createdAt.toMillis():0;
+  l.sort(sort==='new'?(a,b)=>t(b)-t(a):sort==='desc'?(a,b)=>new Date(b.date||0)-new Date(a.date||0):(a,b)=>new Date(a.date||'9999')-new Date(b.date||'9999'));
+  document.getElementById('listHdr').textContent=l.length+(st===''?' حجز قادم':' حجز');
+  document.getElementById('bookingsList').innerHTML=l.length?l.map(b=>bookingCard(b)).join(''):'<div class="empty"><div>📅</div><p>لا توجد حجوزات مطابقة</p></div>';
 };
-function renderList(){filterList();}
+function renderList(){
+  const ys=[...new Set(bookings.map(b=>(b.date||'').slice(0,4)).filter(Boolean))].sort();
+  const sel=document.getElementById('fYear'),cur=sel.value;
+  sel.innerHTML='<option value="">كل السنوات</option>'+ys.map(y=>`<option value="${y}">${y}</option>`).join('');
+  sel.value=ys.includes(cur)?cur:'';
+  filterList();
+}
 
-function renderArchive(){
-  const arch=bookings.filter(b=>isArch(b)).sort((a,b)=>new Date(b.date||0)-new Date(a.date||0));
+window.renderArchive=function(){
+  const af=document.getElementById('archFilter').value;
+  const arch=bookings.filter(b=>isArch(b)&&(!af||(af==='expired'?(b.status!=='done'&&b.status!=='canceled'):b.status===af))).sort((a,b)=>new Date(b.date||0)-new Date(a.date||0));
   document.getElementById('archiveHdr').textContent=arch.length+' حجز في الأرشيف';
   document.getElementById('archiveList').innerHTML=arch.length?arch.map(b=>bookingCard(b,true)).join(''):'<div class="empty"><div>🗂</div><p>الأرشيف فاضي</p></div>';
-}
+};
 
 window.switchTab=function(tab){
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
@@ -419,7 +474,7 @@ window.openDetail=function(id){
   if(!b)return;
   currentId=id;markRead(id);
   const si=statusInfo(b.status);
-  const pct=b.price>0?Math.round(((Number(b.deposit||0)+Number(b.paid||0))/b.price)*100):0;
+  const pct=b.price>0?Math.min(100,Math.round(paidOf(b)/b.price*100)):0;
   const archived=isArch(b);
 
   document.getElementById('detailBody').innerHTML=`
@@ -452,15 +507,17 @@ window.openDetail=function(id){
       <div class="dgrid">
         <div><div class="di-label">نوع التصوير</div>
           <select class="edit-input" id="e_type">
-            ${['زفاف','خطوبة','كتب كتاب','قاعة فقط'].map(t=>`<option ${b.type===t?'selected':''}>${t}</option>`).join('')}
+            ${[...new Set(['زفاف','خطوبة','قاعة فقط',b.type].filter(Boolean))].map(t=>`<option ${b.type===t?'selected':''}>${esc(t)}</option>`).join('')}
           </select>
         </div>
         <div><div class="di-label">اسم الباقة</div><input class="edit-input" id="e_package" value="${esc(b.package)||''}"></div>
+        ${Array.isArray(b.packages)&&b.packages.length?`<div style="grid-column:1/-1"><div class="di-label">الباقات والخدمات المختارة</div>${b.packages.map(p=>`<div class="chip" style="display:block;margin-bottom:4px">${esc(p.name)} (${esc(p.type||'')}) — ${fmt(p.price||0)} ج</div>`).join('')}</div>`:''}
         <div style="grid-column:1/-1"><div class="di-label">تفاصيل الباقة</div><textarea class="edit-input edit-textarea" id="e_pkgDetails">${esc(b.packageDetails)||''}</textarea></div>
         <div><div class="di-label">التاريخ</div><input class="edit-input" id="e_date" type="date" value="${b.date||''}"></div>
         <div><div class="di-label">الوقت</div><input class="edit-input" id="e_time" value="${esc(b.time)||''}"></div>
         <div><div class="di-label">مكان السيشن</div><input class="edit-input" id="e_session" value="${esc(b.sessionLocation)||''}"></div>
-        <div><div class="di-label">مكان القاعة</div><input class="edit-input" id="e_hall" value="${esc(b.hallLocation)||''}"></div>
+        <div><div class="di-label">اسم القاعة</div><input class="edit-input" id="e_hall" value="${esc(b.hallLocation)||''}"></div>
+        <div style="grid-column:1/-1"><div class="di-label">عنوان القاعة</div><input class="edit-input" id="e_hallAddr" value="${esc(b.hallAddress)||''}"></div>
       </div>
     </div>
 
@@ -479,7 +536,7 @@ window.openDetail=function(id){
         <div><div class="di-label">المبلغ الباقي</div><input class="edit-input" id="e_remaining" type="number" value="${b.remaining||0}" style="color:var(--amber);font-weight:700"></div>
       </div>
       <div class="progress" style="margin-bottom:12px"><div class="progress-fill" style="width:${pct}%"></div></div>
-      <div style="font-size:11px;color:var(--text3);margin-bottom:8px">لو المبلغ الباقي = صفر، الحجز ينتقل للأرشيف تلقائياً ✅</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px">⚠️ تعديل العربون أو المبلغ المدفوع من هنا للتصحيح فقط. لتسجيل دفعة جديدة استخدم «تسجيل دفعة» بالأسفل. سداد كامل المبلغ لا يغيّر حالة الحجز.</div>
 
       <!-- خصم -->
       <div style="background:#fdf3e0;border:1px solid rgba(201,168,76,0.4);border-radius:var(--radius-sm);padding:12px;margin-top:6px">
@@ -497,11 +554,16 @@ window.openDetail=function(id){
     <div class="dsec">
       <div class="dsec-title">حالة الحجز</div>
       <select class="status-select" id="e_status">
-        <option value="pending" ${b.status==='pending'?'selected':''}>⏳ معلق</option>
+        <option value="pending" ${(!b.status||b.status==='pending')?'selected':''}>🆕 جديد</option>
+        <option value="awaiting" ${b.status==='awaiting'?'selected':''}>⏳ في انتظار التأكيد</option>
         <option value="confirmed" ${b.status==='confirmed'?'selected':''}>✅ مؤكد</option>
-        <option value="done" ${b.status==='done'?'selected':''}>🎉 منتهي</option>
+        <option value="done" ${b.status==='done'?'selected':''}>📸 تم التصوير</option>
         <option value="canceled" ${b.status==='canceled'?'selected':''}>❌ ملغي</option>
       </select>
+      <div class="dsec-title" style="margin-top:14px">حالة الدفع <small style="font-weight:400;color:var(--text3)">(تُحسب تلقائيًا من المدفوعات)</small></div>
+      <div>${payBadge(b)}</div>
+      <div class="dsec-title" style="margin-top:14px">📝 ملاحظات الإدارة <small style="font-weight:400;color:var(--text3)">(داخلية، لا تظهر للعميل)</small></div>
+      <textarea class="edit-input edit-textarea note-admin" id="e_notes" placeholder="اكتب ملاحظاتك هنا...">${esc(b.adminNotes)||''}</textarea>
     </div>
 
     <!-- حفظ -->
@@ -509,49 +571,7 @@ window.openDetail=function(id){
       <button class="btn-save-edit" onclick="saveEdit('${id}')">💾 حفظ كل التعديلات</button>
     </div>
 
-    <!-- زرار السداد الكامل -->
-    ${Number(b.remaining||0) > 0 ? `
-    <div class="dsec" style="background:linear-gradient(135deg,#e8f5eb,#f0faf2);border-color:#a8d5b0">
-      <div class="dsec-title" style="color:var(--green)">💰 استلام باقي المبلغ</div>
-      <div style="background:#fff;border-radius:10px;padding:12px;margin-bottom:10px">
-        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">
-          <span style="color:var(--text2)">سعر الباقة الإجمالي</span>
-          <span style="font-weight:700">${fmt(b.price||0)} ج</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">
-          <span style="color:var(--text2)">العربون المدفوع مسبقاً</span>
-          <span style="font-weight:700;color:var(--green)">+${fmt(b.deposit||0)} ج</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">
-          <span style="color:var(--text2)">المبلغ المدفوع بعد العربون</span>
-          <span style="font-weight:700;color:var(--green)">+${fmt(b.paid||0)} ج</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:800;border-top:1px solid #eee;padding-top:8px">
-          <span style="color:var(--amber)">الباقي المطلوب</span>
-          <span style="color:var(--amber)">${fmt(b.remaining||0)} ج</span>
-        </div>
-      </div>
-      <div style="font-size:12px;color:var(--text2);margin-bottom:8px">المبلغ المستلم الآن (ج)</div>
-      <input type="number" id="payNowAmount" class="edit-input" value="${b.remaining||0}" style="margin-bottom:10px;font-size:16px;font-weight:700;color:var(--green);text-align:center" oninput="calcNewRemaining('${id}')">
-      <div id="payNowSummary" style="background:#fff;border-radius:10px;padding:10px;margin-bottom:10px;font-size:12px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-          <span style="color:var(--text2)">إجمالي المدفوع بعد الدفعة</span>
-          <span style="font-weight:700;color:var(--green)" id="totalPaidAfter">${fmt(Number(b.deposit||0)+Number(b.paid||0)+Number(b.remaining||0))} ج</span>
-        </div>
-        <div style="display:flex;justify-content:space-between">
-          <span style="color:var(--text2)">المتبقي بعد الدفعة</span>
-          <span style="font-weight:700;color:var(--amber)" id="remainAfter">0 ج</span>
-        </div>
-      </div>
-      <button class="btn-paid" onclick="markPaidAmount('${id}')">✅ تأكيد استلام المبلغ</button>
-    </div>` : Number(b.remaining||0) === 0 ? `
-    <div class="dsec" style="background:linear-gradient(135deg,#e8f1fb,#f0f5ff);border-color:#90caf9">
-      <div style="text-align:center;padding:8px 0">
-        <div style="font-size:24px;margin-bottom:6px">🎉</div>
-        <div style="font-size:14px;font-weight:700;color:var(--blue)">تم السداد الكامل</div>
-        <div style="font-size:12px;color:var(--text2);margin-top:4px">إجمالي المدفوع: ${fmt(b.price||0)} ج</div>
-      </div>
-    </div>` : ''}
+    ${payPanel(b,id)}
 
     <!-- أزرار -->
     <div class="dactions">
@@ -563,6 +583,78 @@ window.openDetail=function(id){
 
   document.getElementById('detailModal').classList.add('open');
 };
+
+/* ===== PAYMENTS LEDGER ===== */
+const KIND_LBL={deposit:'عربون',extra:'دفعة إضافية',final:'تسوية نهائية'};
+function ledgerRows(b){
+  const pays=Array.isArray(b.payments)?b.payments.slice().sort((x,y)=>(x.at||0)-(y.at||0)):[];
+  const ld=pays.filter(p=>p.kind==='deposit').reduce((s,p)=>s+Number(p.amount||0),0);
+  const lo=pays.filter(p=>p.kind!=='deposit').reduce((s,p)=>s+Number(p.amount||0),0);
+  const rows=[];
+  const dd=Number(b.deposit||0)-ld,od=Number(b.paid||0)-lo;
+  if(dd!==0)rows.push({amount:dd,label:dd>0?'عربون (سجل سابق / من العميل)':'تصحيح يدوي للعربون',date:'',method:b.paymentMethod||'',note:''});
+  if(od!==0)rows.push({amount:od,label:od>0?'مبلغ مدفوع (سجل سابق)':'تصحيح يدوي للمدفوع',date:'',method:'',note:''});
+  return rows.concat(pays.map(p=>({amount:Number(p.amount||0),label:KIND_LBL[p.kind]||'دفعة',date:p.date||'',method:p.method||'',note:p.note||''})));
+}
+function payPanel(b,id){
+  const rem=remOf(b),rows=ledgerRows(b);
+  const led=rows.length?`<div class="ledger">${rows.map(r=>`<div class="lg-row"><div class="lg-main"><b>${esc(r.label)}</b><small>${[r.date?fmtDate(r.date):'',esc(r.method),esc(r.note)].filter(Boolean).join(' • ')||'—'}</small></div><div class="lg-amt">${r.amount>=0?'+':''}${fmt(r.amount)} ج</div></div>`).join('')}</div>`:'<div style="font-size:12px;color:var(--text3);margin:6px 0">لا توجد مدفوعات مسجلة بعد</div>';
+  const form=rem>0?`<div class="pay-form">
+      <div class="dsec-title" style="color:var(--green)">＋ تسجيل دفعة</div>
+      <div class="dgrid">
+        <div><div class="di-label">قيمة الدفعة (الحد الأقصى ${fmt(rem)} ج)</div><input type="number" inputmode="decimal" class="edit-input" id="pay_amt" value="${rem}" min="1" max="${rem}" style="font-weight:700;color:var(--green)"></div>
+        <div><div class="di-label">نوع الدفعة</div><select class="edit-input" id="pay_kind"><option value="${paidOf(b)>0?'extra':'deposit'}">${paidOf(b)>0?'دفعة إضافية':'عربون'}</option>${paidOf(b)>0?'<option value="deposit">عربون</option>':'<option value="extra">دفعة إضافية</option>'}<option value="final">تسوية نهائية (كل المتبقي)</option></select></div>
+        <div><div class="di-label">تاريخ الدفع</div><input type="date" class="edit-input" id="pay_date" value="${cairoToday()}"></div>
+        <div><div class="di-label">طريقة الدفع</div><select class="edit-input" id="pay_method">${['كاش','إنستاباي','فودافون كاش'].map(m=>`<option>${m}</option>`).join('')}</select></div>
+        <div style="grid-column:1/-1"><div class="di-label">ملاحظات (اختياري)</div><input class="edit-input" id="pay_note" maxlength="120"></div>
+      </div>
+      <button class="btn-paid" id="payBtn" onclick="recordPayment('${id}')">✅ تسجيل الدفعة</button>
+    </div>`:`<div style="text-align:center;padding:10px 0;font-size:13px;font-weight:700;color:var(--blue)">🎉 تم سداد المبلغ بالكامل</div>`;
+  return `<div class="dsec" style="background:linear-gradient(135deg,#e8f5eb,#f0faf2);border-color:#a8d5b0">
+    <div class="dsec-title" style="color:var(--green)">💰 سجل المدفوعات</div>
+    <div class="pay-sum">
+      <div><span style="color:var(--text2)">إجمالي سعر الحجز</span><b>${fmt(b.price||0)} ج</b></div>
+      <div><span style="color:var(--text2)">إجمالي المدفوع</span><b style="color:var(--green)">${fmt(paidOf(b))} ج</b></div>
+      <div style="border-top:1px solid #eee;padding-top:8px"><span style="color:var(--amber);font-weight:800">المتبقي</span><b style="color:var(--amber)">${fmt(rem)} ج</b></div>
+      <div><span style="color:var(--text2)">حالة الدفع</span>${payBadge(b)}</div>
+    </div>
+    ${led}${form}
+  </div>`;
+}
+window.recordPayment=function(id){return once('pay_'+id,async()=>{
+  const g=x=>document.getElementById(x);
+  const amt=parseFloat(toEn(g('pay_amt').value));
+  const kind=g('pay_kind').value,method=g('pay_method').value,date=g('pay_date').value,note=g('pay_note').value.trim();
+  if(!(amt>0)){showToast('⚠️ أدخل قيمة الدفعة');return;}
+  if(!date){showToast('⚠️ اختر تاريخ الدفع');return;}
+  const btn=g('payBtn');if(btn)btn.disabled=true;
+  loading(true);
+  try{
+    const ref=db.collection('bookings').doc(id);
+    await db.runTransaction(async tx=>{
+      const snap=await tx.get(ref);
+      if(!snap.exists)throw new Error('الحجز غير موجود');
+      const d=snap.data();
+      const price=Number(d.price||0),dep=Number(d.deposit||0),pd=Number(d.paid||0);
+      const rem=Math.max(0,price-dep-pd);
+      if(amt>rem)throw new Error('RANGE:'+rem);
+      if(kind==='final'&&amt!==rem)throw new Error('FINAL:'+rem);
+      const entry={id:'p'+Date.now().toString(36),amount:amt,date,method,kind,note,at:Date.now()};
+      const upd={payments:(Array.isArray(d.payments)?d.payments:[]).concat([entry]),remaining:rem-amt,lastPaymentAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+      if(kind==='deposit')upd.deposit=dep+amt;else upd.paid=pd+amt;
+      tx.update(ref,upd);
+    });
+    const fresh=await ref.get();const b=bookings.find(x=>x.id===id);
+    if(b&&fresh.exists)Object.assign(b,fresh.data());
+    renderAll();openDetail(id);
+    showToast('✅ تم تسجيل الدفعة');
+  }catch(e){
+    const m=String(e.message||e);
+    showToast(m.startsWith('RANGE:')?'⚠️ المبلغ أكبر من المتبقي ('+fmt(+m.slice(6))+' جنيه)':m.startsWith('FINAL:')?'⚠️ التسوية النهائية لازم تساوي كل المتبقي ('+fmt(+m.slice(6))+' جنيه)':'⚠️ خطأ: '+m);
+    const btn2=g('payBtn');if(btn2)btn2.disabled=false;
+  }
+  loading(false);
+});};
 
 /* ===== DISCOUNT ===== */
 window.recalcRemainingFromPrice=function(){
@@ -581,28 +673,24 @@ window.applyDiscount=function(){
 };
 
 /* ===== SAVE EDIT ===== */
-window.saveEdit=async function(id){
-  const remaining=parseFloat(document.getElementById('e_remaining').value)||0;
-  const sel=document.getElementById('e_status').value;const status=sel==='canceled'?'canceled':(remaining<=0?'done':sel);
+window.saveEdit=function(id){return once('save_'+id,async()=>{
+  const g=x=>document.getElementById(x);
+  const b=bookings.find(x=>x.id===id);if(!b)return;
+  const price=parseFloat(g('e_price').value)||0,deposit=parseFloat(g('e_deposit').value)||0,paid=parseFloat(g('e_paid').value)||0;
+  if(price<0||deposit<0||paid<0){showToast('⚠️ لا يمكن إدخال قيم سالبة');return;}
+  if(price>0&&deposit+paid>price){showToast('⚠️ المدفوع ('+fmt(deposit+paid)+' ج) أكبر من سعر الحجز ('+fmt(price)+' ج)');return;}
+  const status=g('e_status').value;
+  if(status==='canceled'&&b.status!=='canceled'&&!confirm('هل تريد إلغاء هذا الحجز؟\nسيظهر في الأرشيف ولن يُحتسب في الإجماليات المالية.'))return;
+  const remaining=Math.max(0,price-deposit-paid);
   const updates={
-    groom:document.getElementById('e_groom').value.trim(),
-    bride:document.getElementById('e_bride').value.trim(),
-    phone1:document.getElementById('e_phone1').value.trim(),
-    phone2:document.getElementById('e_phone2').value.trim(),
-    type:document.getElementById('e_type').value,
-    package:document.getElementById('e_package').value.trim(),
-    packageDetails:document.getElementById('e_pkgDetails').value.trim(),
-    date:document.getElementById('e_date').value,
-    time:document.getElementById('e_time').value.trim(),
-    sessionLocation:document.getElementById('e_session').value.trim(),
-    hallLocation:document.getElementById('e_hall').value.trim(),
-    price:parseFloat(document.getElementById('e_price').value)||0,
-    originalPrice:parseFloat(document.getElementById('e_origPrice').value)||0,
-    discount:parseFloat(document.getElementById('e_discount').value)||0,
-    paymentMethod:document.getElementById('e_payMethod').value,
-    deposit:parseFloat(document.getElementById('e_deposit').value)||0,
-    paid:parseFloat(document.getElementById('e_paid').value)||0,
-    remaining,status,
+    groom:g('e_groom').value.trim(),bride:g('e_bride').value.trim(),
+    phone1:g('e_phone1').value.trim(),phone2:g('e_phone2').value.trim(),
+    type:g('e_type').value,package:g('e_package').value.trim(),packageDetails:g('e_pkgDetails').value.trim(),
+    date:g('e_date').value,time:g('e_time').value.trim(),
+    sessionLocation:g('e_session').value.trim(),hallLocation:g('e_hall').value.trim(),hallAddress:g('e_hallAddr').value.trim(),
+    price,originalPrice:parseFloat(g('e_origPrice').value)||0,discount:parseFloat(g('e_discount').value)||0,
+    paymentMethod:g('e_payMethod').value,deposit,paid,remaining,status,
+    adminNotes:g('e_notes').value.trim(),
     updatedAt:firebase.firestore.FieldValue.serverTimestamp()
   };
   loading(true);
@@ -610,12 +698,11 @@ window.saveEdit=async function(id){
     await db.collection('bookings').doc(id).update(updates);
     const idx=bookings.findIndex(x=>x.id===id);
     if(idx>-1)bookings[idx]={...bookings[idx],...updates};
-    renderAll();
-    closeDetail();
-    showToast(remaining<=0?'🎉 تم السداد الكامل — انتقل للأرشيف':'✅ تم حفظ التعديلات');
+    renderAll();closeDetail();
+    showToast('✅ تم حفظ التعديلات');
   }catch(e){showToast('⚠️ خطأ في الحفظ: '+e.message);}
   loading(false);
-};
+});};
 
 /* ===== CALC NEW REMAINING ===== */
 window.calcNewRemaining=function(id){
@@ -630,45 +717,19 @@ window.calcNewRemaining=function(id){
   if(el2)el2.textContent=fmt(newRemain)+' ج';
 };
 
-/* ===== MARK PAID AMOUNT ===== */
-window.markPaidAmount=async function(id){
-  const b=bookings.find(x=>x.id===id);
-  if(!b)return;
-  const payNow=parseFloat(document.getElementById('payNowAmount').value)||0;
-  if(payNow<=0){showToast('⚠️ أدخل المبلغ المستلم');return;}
-  const newRemain=Math.max(0,(b.remaining||0)-payNow);
-  const newPaid=Number(b.paid||0)+Math.min(payNow,Number(b.remaining||0));
-  const newStatus=newRemain<=0?'done':b.status;
-  if(!confirm(`تأكيد استلام ${fmt(payNow)} جنيه؟
-المتبقي بعد الدفعة: ${fmt(newRemain)} جنيه`))return;
-  loading(true);
-  try{
-    await db.collection('bookings').doc(id).update({
-      remaining:newRemain,
-      paid:newPaid,
-      status:newStatus,
-      paidAt:newRemain<=0?firebase.firestore.FieldValue.serverTimestamp():b.paidAt||null
-    });
-    if(b){b.remaining=newRemain;b.paid=newPaid;b.status=newStatus;}
-    renderAll();
-    closeDetail();
-    showToast(newRemain<=0?'🎉 تم السداد الكامل — الحجز في الأرشيف':`✅ تم استلام ${fmt(payNow)} ج — الباقي ${fmt(newRemain)} ج`);
-  }catch(e){showToast('⚠️ خطأ: '+e.message);}
-  loading(false);
-};
-
 /* ===== DELETE ===== */
-window.deleteBooking=async function(id){
-  if(!confirm('هل تريد حذف هذا الحجز نهائياً؟'))return;
+window.deleteBooking=function(id){return once('del_'+id,async()=>{
+  const b=bookings.find(x=>x.id===id);
+  if(!confirm('حذف نهائي!\nهل تريد حذف حجز '+((b&&b.groom)||'')+' نهائيًا؟ لا يمكن التراجع.\n(لو الحجز اتلغى فقط، غيّر حالته إلى «ملغي» بدل الحذف)'))return;
   loading(true);
   try{
     await db.collection('bookings').doc(id).delete();
-    bookings=bookings.filter(b=>b.id!==id);
+    bookings=bookings.filter(x=>x.id!==id);
     closeDetail();renderAll();
     showToast('🗑 تم حذف الحجز');
   }catch(e){showToast('⚠️ خطأ في الحذف');}
   loading(false);
-};
+});};
 
 /* ===== PACKAGES ===== */
 const TYPES=['زفاف','خطوبة','قاعة فقط'];
@@ -963,7 +1024,7 @@ function renderMini(){
   const it=[[unreadList().length,'جديدة غير مقروءة','openNotifs()',1],[act.filter(b=>!Number(b.deposit||0)).length,'بانتظار عربون',"switchTab('upcoming')"],[act.filter(b=>b.status==='confirmed').length,'مؤكدة قادمة',"switchTab('upcoming')"],[act.filter(b=>dd(b)>=0&&dd(b)<=3).length,'خلال 3 أيام',"switchTab('upcoming')"],[act.filter(b=>dd(b)===1).length,'غدًا',"switchTab('upcoming')"],[openReminders().length,'تذكيرات مفتوحة',"switchTab('reminders')",1]];
   $('miniStats').innerHTML=it.map(([n,l,f,hot])=>`<div class="mini${hot&&n?' hot':''}" onclick="${f}"><b>${fmt(n)}</b><span>${l}</span></div>`).join('');
 }
-function payChip(b){const r=Number(b.remaining||0),d=Number(b.deposit||0);return r<=0&&Number(b.price||0)>0?'<span class="chip ok">مدفوع بالكامل</span>':d>0?'<span class="chip">عربون مدفوع</span>':'<span class="chip warn">بدون عربون</span>';}
+function payChip(b){return payBadge(b);}
 window.renderUpcoming=function(){
   const st=$('upStatus').value,rg=$('upRange').value;
   let l=bookings.filter(b=>{
@@ -982,7 +1043,7 @@ window.renderUpcoming=function(){
     <div class="btop"><div class="bnames">${esc(b.groom)||'—'}<span class="amp">&</span>${esc(b.bride)||'—'}</div><span class="sbadge ${si.cls}">${si.label}</span></div>
     <div style="margin-bottom:6px">${d>=0&&!isArch(b)?`<span class="chip warn">${d===0?'اليوم':d===1?'غدًا':'بعد '+d+' يوم'}</span>`:''}${payChip(b)}${!isArch(b)&&b.status!=='confirmed'?'<span class="chip">غير مؤكد</span>':''}</div>
     <div class="bmeta"><div class="bm">📅 ${fmtDate(b.date)}</div><div class="bm">⏰ ${esc(b.time)||'—'}</div><div class="bm">🏛 ${esc(b.hallLocation)||'—'}</div><div class="bm">📍 ${esc(b.sessionLocation)||'—'}</div><div class="bm" style="grid-column:1/-1">📦 ${esc(b.package)||'—'}</div></div>
-    <div class="bpay-row"><span>الإجمالي ${fmt(b.price||0)} ج</span><span class="paid">عربون ${fmt(b.deposit||0)} ج</span>${Number(b.paid||0)>0?`<span class="paid">مدفوع ${fmt(b.paid)} ج</span>`:''}<span class="rem">باقي ${fmt(b.remaining||0)} ج</span></div>
+    <div class="bpay-row"><span>الإجمالي ${fmt(b.price||0)} ج</span><span class="paid">عربون ${fmt(b.deposit||0)} ج</span>${Number(b.paid||0)>0?`<span class="paid">مدفوع ${fmt(b.paid)} ج</span>`:''}<span class="rem">باقي ${fmt(remOf(b))} ج</span></div>
     <div class="act-row"><button onclick="openDetail('${b.id}')">تفاصيل</button>${b.status==='canceled'?'':waDirect(b,b.id,'contact')}</div></div></div>`;}).join(''):'<div class="empty"><div>📅</div><p>لا توجد نتائج</p></div>';
 };
 
